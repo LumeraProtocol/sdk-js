@@ -6,7 +6,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "dev:local": "vite --config vite.local.config.ts",
     "build": "vite build",
+    "build:local": "vite build --config vite.local.config.ts",
     "preview": "vite preview"
   },
   "dependencies": {
