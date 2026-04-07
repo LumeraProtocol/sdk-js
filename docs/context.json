@@ -1,100 +1,69 @@
 {
-  "generated_at": "2025-10-22T03:39:31Z",
+  "schema_version": "context.v1",
+  "updated": "2026-04-06T00:00:00Z",
   "project": {
-    "name": "Lumera JS/TS SDK",
-    "version": "0.1.0-beta",
-    "repository": "github.com/LumeraProtocol/sdk-js",
-    "description": "Unified JS/TS client for Lumera blockchain (CosmJS+RPC) and Cascade storage (sn-api) with LEP-1 support"
+    "name": "sdk-js",
+    "note": "Multi-repo project. lumera provides chain types. sdk-js (this) provides JS/TS client library for blockchain and Cascade storage."
   },
-  "decisions": {
-    "tx_transport": "CosmJS (SigningStargateClient) over Tendermint RPC",
-    "module_queries": "RPC (via Telescope-generated clients) for Action and Supernode",
-    "cascade_storage": "sn-api (REST + SSE)",
-    "rq_processing": "rq-library-wasm (single-block layouts, LEP-1 IDs) in Web Worker when available",
-    "signing": "Wallet ADR-036 for off-chain bytes; CosmJS signDirect/signAmino for tx",
-    "adapters_seam": "Interfaces for BlockchainClient/TxClient/ActionQuery/SupernodeQuery; can add gRPC-web later without breaking apps"
+  "workspace": {
+    "topology": "single-repo",
+    "control_repo": ".",
+    "repos": []
   },
-  "sdk_surface": {
-    "facade": [
-      "client.Blockchain.Tx.*",
-      "client.Blockchain.Action.*",
-      "client.Blockchain.Supernode.*",
-      "client.Cascade.*"
-    ],
-    "cascade_methods": [
-      "CascadeUploader.uploadFile",
-      "CascadeDownloader.downloadFile",
-      "CascadeDownloader.download",
-      "CascadeDownloader.downloadPrivate",
-      "TaskManager.waitForCompletion",
-      "TaskManager.waitForDownloadCompletion",
-      "SNApiClient.startCascade",
-      "SNApiClient.requestDownload",
-      "SNApiClient.downloadFile",
-      "SNApiClient.getTask",
-      "SNApiClient.getTaskStatus"
-    ]
-  },
-  "skeleton_files": [
-    "package.json",
-    "tsconfig.json",
-    "src/index.ts",
-    "src/client.ts",
-    "src/blockchain/interfaces.ts",
-    "src/blockchain/cosmjs.ts",
-    "src/blockchain/client.ts",
-    "src/blockchain/messages.ts",
-    "src/blockchain/adapters/cascade-port.ts",
-    "src/codegen/",
-    "scripts/post-codegen-fix.ts",
-    "src/cascade/client.ts",
-    "src/cascade/uploader.ts",
-    "src/cascade/downloader.ts",
-    "src/cascade/task.ts",
-    "src/cascade/ports.ts",
-    "src/internal/encoding.ts",
-    "src/internal/hash.ts",
-    "src/internal/http.ts",
-    "src/internal/zstd.ts",
-    "src/types/snapi.ts",
-    "src/types/snapi.gen.ts",
-    "src/wallets/keplr.ts",
-    "src/wallets/leap.ts",
-    "src/wallets/signer.ts",
-    "src/wasm/bridge.ts",
-    "src/wasm/lep1.ts",
-    "src/wasm/types.ts",
-    "examples/node/upload.ts",
-    "examples/node/full-workflow.ts",
-    "examples/node/lumera-client-demo.ts",
-    "examples/browser/index.html",
-    "examples/browser/main.ts"
-  ],
-  "status": {
+  "feature_status": [],
+  "as_built": {
+    "version": "0.2.7",
+    "decisions": {
+      "tx_transport": "CosmJS (SigningStargateClient) over Tendermint RPC",
+      "module_queries": "RPC (via Telescope-generated clients) for Action and Supernode",
+      "cascade_storage": "sn-api (REST + SSE)",
+      "rq_processing": "rq-library-wasm (single-block layouts, LEP-1 IDs) in Web Worker when available",
+      "signing": "Wallet ADR-036 for off-chain bytes; CosmJS signDirect/signAmino for tx"
+    },
     "implemented": [
-      "Project structure agreed",
-      "Interfaces & factories defined",
-      "CosmJS tx client implemented (CosmjsTxClient)",
-      "RPC query clients implemented (RpcActionQuery, RpcSupernodeQuery)",
-      "Telescope code generation integrated",
-      "Cascade client surface aligned with LEP-1",
-      "Wire exact LCD paths for Action/Supernode modules",
-      "OpenAPI-generated sn-api types (src/types/snapi.gen.ts)",
-      "SNApiClient implementation with REST and SSE support",
-      "Keplr/Leap wallet adapters with ADR-036 signArbitrary",
+      "CosmJS tx client (CosmjsTxClient)",
+      "RPC query clients (RpcActionQuery, RpcSupernodeQuery)",
+      "Telescope code generation",
+      "Cascade client (upload, download, task management)",
+      "SNApiClient with REST and SSE",
+      "Keplr/Leap wallet adapters with ADR-036",
       "End-to-end examples (browser and Node.js)",
-      "Vitest unit and integration tests",
-      "API documentation generated (TypeDoc)",
-      "README and migration guide complete"
+      "Vitest tests",
+      "TypeDoc API documentation"
     ],
     "pending": [
-      "Implement Web Worker offload for rq-wasm (bridge exists, worker pattern pending)"
-    ]
+      "Web Worker offload for rq-wasm"
+    ],
+    "compatibility": {
+      "node": ">=18",
+      "typescript": ">=5",
+      "cosmjs": "^0.32.0"
+    }
   },
-  "compatibility": {
-    "node": ">=18",
-    "typescript": ">=5",
-    "cosmjs": "^0.32.0",
-    "browsers": "Last 2 versions (Web Worker for rq-wasm)"
-  }
+  "handoff": {
+    "stopped_at": "SDK v0.2.7 published. Core features implemented. On everlight branch but no Everlight-specific features yet.",
+    "next_immediate": "Everlight SDK work will begin when lumera publishes tagged Everlight release. Will need updated Telescope codegen for Everlight query types.",
+    "watch_out": "Proto codegen depends on lumera proto definitions. When Everlight protos are tagged, re-run Telescope codegen."
+  },
+  "next_slice": {
+    "slice_id": "",
+    "goal": "",
+    "features": [],
+    "acceptance_tests": []
+  },
+  "commands_to_run": {
+    "test": "npm test",
+    "lint": "npm run lint",
+    "typecheck": "npm run typecheck",
+    "dev": "npm run build"
+  },
+  "repo_commands": {},
+  "repo_state": [],
+  "recent_decisions": [
+    "2026-04-06: BRIDGE context normalized to standard schema. Previous non-standard context.json (generated 2025-10-22) content preserved in as_built section."
+  ],
+  "blockers": [],
+  "discrepancies": [],
+  "gate_history": [],
+  "eval_history": []
 }

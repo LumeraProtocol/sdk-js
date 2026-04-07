@@ -1,0 +1,4 @@
+type = "repo"
+description = "sdk-js repo"
+workspace = "lumera-dev"
+platform = "claude-code"
