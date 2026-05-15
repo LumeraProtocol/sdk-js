@@ -21,6 +21,7 @@ export interface Action {
   blockHeight: bigint;
   superNodes: string[];
   fileSizeKbs: bigint;
+  appPubkey: Uint8Array;
 }
 export interface ActionProtoMsg {
   typeUrl: "/lumera.action.v1.Action";
@@ -43,6 +44,7 @@ export interface ActionAmino {
   blockHeight: string;
   superNodes: string[];
   fileSizeKbs: string;
+  app_pubkey: string;
 }
 export interface ActionAminoMsg {
   type: "/lumera.action.v1.Action";
@@ -59,7 +61,8 @@ function createBaseAction(): Action {
     state: 0,
     blockHeight: BigInt(0),
     superNodes: [],
-    fileSizeKbs: BigInt(0)
+    fileSizeKbs: BigInt(0),
+    appPubkey: new Uint8Array()
   };
 }
 /**
@@ -71,10 +74,10 @@ function createBaseAction(): Action {
 export const Action = {
   typeUrl: "/lumera.action.v1.Action",
   is(o: any): o is Action {
-    return o && (o.$typeUrl === Action.typeUrl || typeof o.creator === "string" && typeof o.actionID === "string" && isSet(o.actionType) && (o.metadata instanceof Uint8Array || typeof o.metadata === "string") && typeof o.price === "string" && typeof o.expirationTime === "bigint" && isSet(o.state) && typeof o.blockHeight === "bigint" && Array.isArray(o.superNodes) && (!o.superNodes.length || typeof o.superNodes[0] === "string") && typeof o.fileSizeKbs === "bigint");
+    return o && (o.$typeUrl === Action.typeUrl || typeof o.creator === "string" && typeof o.actionID === "string" && isSet(o.actionType) && (o.metadata instanceof Uint8Array || typeof o.metadata === "string") && typeof o.price === "string" && typeof o.expirationTime === "bigint" && isSet(o.state) && typeof o.blockHeight === "bigint" && Array.isArray(o.superNodes) && (!o.superNodes.length || typeof o.superNodes[0] === "string") && typeof o.fileSizeKbs === "bigint" && (o.appPubkey instanceof Uint8Array || typeof o.appPubkey === "string"));
   },
   isAmino(o: any): o is ActionAmino {
-    return o && (o.$typeUrl === Action.typeUrl || typeof o.creator === "string" && typeof o.actionID === "string" && isSet(o.actionType) && (o.metadata instanceof Uint8Array || typeof o.metadata === "string") && typeof o.price === "string" && typeof o.expirationTime === "bigint" && isSet(o.state) && typeof o.blockHeight === "bigint" && Array.isArray(o.superNodes) && (!o.superNodes.length || typeof o.superNodes[0] === "string") && typeof o.fileSizeKbs === "bigint");
+    return o && (o.$typeUrl === Action.typeUrl || typeof o.creator === "string" && typeof o.actionID === "string" && isSet(o.actionType) && (o.metadata instanceof Uint8Array || typeof o.metadata === "string") && typeof o.price === "string" && typeof o.expirationTime === "bigint" && isSet(o.state) && typeof o.blockHeight === "bigint" && Array.isArray(o.superNodes) && (!o.superNodes.length || typeof o.superNodes[0] === "string") && typeof o.fileSizeKbs === "bigint" && (o.app_pubkey instanceof Uint8Array || typeof o.app_pubkey === "string"));
   },
   encode(message: Action, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.creator !== "") {
@@ -106,6 +109,9 @@ export const Action = {
     }
     if (message.fileSizeKbs !== BigInt(0)) {
       writer.uint32(80).int64(message.fileSizeKbs);
+    }
+    if (message.appPubkey.length !== 0) {
+      writer.uint32(90).bytes(message.appPubkey);
     }
     return writer;
   },
@@ -146,6 +152,9 @@ export const Action = {
         case 10:
           message.fileSizeKbs = reader.int64();
           break;
+        case 11:
+          message.appPubkey = reader.bytes();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -165,6 +174,7 @@ export const Action = {
     message.blockHeight = object.blockHeight !== undefined && object.blockHeight !== null ? BigInt(object.blockHeight.toString()) : BigInt(0);
     message.superNodes = object.superNodes?.map(e => e) || [];
     message.fileSizeKbs = object.fileSizeKbs !== undefined && object.fileSizeKbs !== null ? BigInt(object.fileSizeKbs.toString()) : BigInt(0);
+    message.appPubkey = object.appPubkey ?? new Uint8Array();
     return message;
   },
   fromAmino(object: ActionAmino): Action {
@@ -197,6 +207,9 @@ export const Action = {
     if (object.fileSizeKbs !== undefined && object.fileSizeKbs !== null) {
       message.fileSizeKbs = BigInt(object.fileSizeKbs);
     }
+    if (object.app_pubkey !== undefined && object.app_pubkey !== null) {
+      message.appPubkey = bytesFromBase64(object.app_pubkey);
+    }
     return message;
   },
   toAmino(message: Action): ActionAmino {
@@ -215,6 +228,7 @@ export const Action = {
       obj.superNodes = message.superNodes;
     }
     obj.fileSizeKbs = message.fileSizeKbs !== BigInt(0) ? message.fileSizeKbs?.toString() : undefined;
+    obj.app_pubkey = message.appPubkey ? base64FromBytes(message.appPubkey) : undefined;
     return obj;
   },
   fromAminoMsg(object: ActionAminoMsg): Action {

@@ -3,21 +3,24 @@
 import { GeneratedType, Registry, OfflineSigner } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes, AminoTypes, SigningStargateClient } from "@cosmjs/stargate";
 import { HttpEndpoint } from "@cosmjs/tendermint-rpc";
-import * as lumeraSupernodeV1TxRegistry from "./supernode/v1/tx.registry";
-import * as lumeraLumeraidTxRegistry from "./lumeraid/tx.registry";
-import * as lumeraClaimTxRegistry from "./claim/tx.registry";
 import * as lumeraActionV1TxRegistry from "./action/v1/tx.registry";
-import * as lumeraSupernodeV1TxAmino from "./supernode/v1/tx.amino";
-import * as lumeraLumeraidTxAmino from "./lumeraid/tx.amino";
-import * as lumeraClaimTxAmino from "./claim/tx.amino";
+import * as lumeraAuditV1TxRegistry from "./audit/v1/tx.registry";
+import * as lumeraClaimTxRegistry from "./claim/tx.registry";
+import * as lumeraLumeraidTxRegistry from "./lumeraid/tx.registry";
+import * as lumeraSupernodeV1TxRegistry from "./supernode/v1/tx.registry";
 import * as lumeraActionV1TxAmino from "./action/v1/tx.amino";
+import * as lumeraAuditV1TxAmino from "./audit/v1/tx.amino";
+import * as lumeraClaimTxAmino from "./claim/tx.amino";
+import * as lumeraLumeraidTxAmino from "./lumeraid/tx.amino";
+import * as lumeraSupernodeV1TxAmino from "./supernode/v1/tx.amino";
 export const lumeraAminoConverters = {
-  ...lumeraSupernodeV1TxAmino.AminoConverter,
-  ...lumeraLumeraidTxAmino.AminoConverter,
+  ...lumeraActionV1TxAmino.AminoConverter,
+  ...lumeraAuditV1TxAmino.AminoConverter,
   ...lumeraClaimTxAmino.AminoConverter,
-  ...lumeraActionV1TxAmino.AminoConverter
+  ...lumeraLumeraidTxAmino.AminoConverter,
+  ...lumeraSupernodeV1TxAmino.AminoConverter
 };
-export const lumeraProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [...lumeraSupernodeV1TxRegistry.registry, ...lumeraLumeraidTxRegistry.registry, ...lumeraClaimTxRegistry.registry, ...lumeraActionV1TxRegistry.registry];
+export const lumeraProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [...lumeraActionV1TxRegistry.registry, ...lumeraAuditV1TxRegistry.registry, ...lumeraClaimTxRegistry.registry, ...lumeraLumeraidTxRegistry.registry, ...lumeraSupernodeV1TxRegistry.registry];
 export const getSigningLumeraClientOptions = ({
   defaultTypes = defaultRegistryTypes
 }: {

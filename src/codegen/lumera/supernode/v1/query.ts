@@ -4,6 +4,7 @@ import { PageRequest, PageRequestAmino, PageResponse, PageResponseAmino } from "
 import { Params, ParamsAmino } from "./params";
 import { SuperNode, SuperNodeAmino } from "./super_node";
 import { SupernodeMetricsState, SupernodeMetricsStateAmino } from "./metrics";
+import { Coin, CoinAmino } from "../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import { DeepPartial } from "../../../helpers";
 import { GlobalDecoderRegistry } from "../../../registry";
@@ -326,6 +327,232 @@ export interface QueryGetMetricsResponseAmino {
 export interface QueryGetMetricsResponseAminoMsg {
   type: "/lumera.supernode.v1.QueryGetMetricsResponse";
   value: QueryGetMetricsResponseAmino;
+}
+/**
+ * QueryPoolStateRequest is request type for the Query/PoolState RPC method.
+ * @name QueryPoolStateRequest
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPoolStateRequest
+ */
+export interface QueryPoolStateRequest {}
+export interface QueryPoolStateRequestProtoMsg {
+  typeUrl: "/lumera.supernode.v1.QueryPoolStateRequest";
+  value: Uint8Array;
+}
+/**
+ * QueryPoolStateRequest is request type for the Query/PoolState RPC method.
+ * @name QueryPoolStateRequestAmino
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPoolStateRequest
+ */
+export interface QueryPoolStateRequestAmino {}
+export interface QueryPoolStateRequestAminoMsg {
+  type: "/lumera.supernode.v1.QueryPoolStateRequest";
+  value: QueryPoolStateRequestAmino;
+}
+/**
+ * QueryPoolStateResponse is response type for the Query/PoolState RPC method.
+ * @name QueryPoolStateResponse
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPoolStateResponse
+ */
+export interface QueryPoolStateResponse {
+  /**
+   * balance is the current undistributed pool balance.
+   */
+  balance: Coin[];
+  /**
+   * last_distribution_height is the block height of the last distribution.
+   */
+  lastDistributionHeight: bigint;
+  /**
+   * total_distributed is the cumulative amount distributed.
+   */
+  totalDistributed: Coin[];
+  /**
+   * eligible_sn_count is the number of SuperNodes currently eligible for payouts.
+   */
+  eligibleSnCount: bigint;
+}
+export interface QueryPoolStateResponseProtoMsg {
+  typeUrl: "/lumera.supernode.v1.QueryPoolStateResponse";
+  value: Uint8Array;
+}
+/**
+ * QueryPoolStateResponse is response type for the Query/PoolState RPC method.
+ * @name QueryPoolStateResponseAmino
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPoolStateResponse
+ */
+export interface QueryPoolStateResponseAmino {
+  /**
+   * balance is the current undistributed pool balance.
+   */
+  balance: CoinAmino[];
+  /**
+   * last_distribution_height is the block height of the last distribution.
+   */
+  last_distribution_height: string;
+  /**
+   * total_distributed is the cumulative amount distributed.
+   */
+  total_distributed: CoinAmino[];
+  /**
+   * eligible_sn_count is the number of SuperNodes currently eligible for payouts.
+   */
+  eligible_sn_count: string;
+}
+export interface QueryPoolStateResponseAminoMsg {
+  type: "/lumera.supernode.v1.QueryPoolStateResponse";
+  value: QueryPoolStateResponseAmino;
+}
+/**
+ * QuerySNEligibilityRequest is request type for the Query/SNEligibility RPC method.
+ * @name QuerySNEligibilityRequest
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QuerySNEligibilityRequest
+ */
+export interface QuerySNEligibilityRequest {
+  validatorAddress: string;
+}
+export interface QuerySNEligibilityRequestProtoMsg {
+  typeUrl: "/lumera.supernode.v1.QuerySNEligibilityRequest";
+  value: Uint8Array;
+}
+/**
+ * QuerySNEligibilityRequest is request type for the Query/SNEligibility RPC method.
+ * @name QuerySNEligibilityRequestAmino
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QuerySNEligibilityRequest
+ */
+export interface QuerySNEligibilityRequestAmino {
+  validator_address: string;
+}
+export interface QuerySNEligibilityRequestAminoMsg {
+  type: "/lumera.supernode.v1.QuerySNEligibilityRequest";
+  value: QuerySNEligibilityRequestAmino;
+}
+/**
+ * QuerySNEligibilityResponse is response type for the Query/SNEligibility RPC method.
+ * @name QuerySNEligibilityResponse
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QuerySNEligibilityResponse
+ */
+export interface QuerySNEligibilityResponse {
+  eligible: boolean;
+  reason: string;
+  cascadeKademliaDbBytes: number;
+  smoothedWeight: number;
+}
+export interface QuerySNEligibilityResponseProtoMsg {
+  typeUrl: "/lumera.supernode.v1.QuerySNEligibilityResponse";
+  value: Uint8Array;
+}
+/**
+ * QuerySNEligibilityResponse is response type for the Query/SNEligibility RPC method.
+ * @name QuerySNEligibilityResponseAmino
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QuerySNEligibilityResponse
+ */
+export interface QuerySNEligibilityResponseAmino {
+  eligible: boolean;
+  reason: string;
+  cascade_kademlia_db_bytes: number;
+  smoothed_weight: number;
+}
+export interface QuerySNEligibilityResponseAminoMsg {
+  type: "/lumera.supernode.v1.QuerySNEligibilityResponse";
+  value: QuerySNEligibilityResponseAmino;
+}
+/**
+ * @name PayoutHistoryEntry
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.PayoutHistoryEntry
+ */
+export interface PayoutHistoryEntry {
+  height: bigint;
+  validatorAddress: string;
+  supernodeAccount: string;
+  amount: Coin[];
+  rawBytes: number;
+  smoothedBytes: number;
+  effectiveWeight: number;
+  rampWeight: number;
+}
+export interface PayoutHistoryEntryProtoMsg {
+  typeUrl: "/lumera.supernode.v1.PayoutHistoryEntry";
+  value: Uint8Array;
+}
+/**
+ * @name PayoutHistoryEntryAmino
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.PayoutHistoryEntry
+ */
+export interface PayoutHistoryEntryAmino {
+  height: string;
+  validator_address: string;
+  supernode_account: string;
+  amount: CoinAmino[];
+  raw_bytes: number;
+  smoothed_bytes: number;
+  effective_weight: number;
+  ramp_weight: number;
+}
+export interface PayoutHistoryEntryAminoMsg {
+  type: "/lumera.supernode.v1.PayoutHistoryEntry";
+  value: PayoutHistoryEntryAmino;
+}
+/**
+ * @name QueryPayoutHistoryRequest
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPayoutHistoryRequest
+ */
+export interface QueryPayoutHistoryRequest {
+  validatorAddress: string;
+  pagination?: PageRequest;
+}
+export interface QueryPayoutHistoryRequestProtoMsg {
+  typeUrl: "/lumera.supernode.v1.QueryPayoutHistoryRequest";
+  value: Uint8Array;
+}
+/**
+ * @name QueryPayoutHistoryRequestAmino
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPayoutHistoryRequest
+ */
+export interface QueryPayoutHistoryRequestAmino {
+  validator_address: string;
+  pagination?: PageRequestAmino;
+}
+export interface QueryPayoutHistoryRequestAminoMsg {
+  type: "/lumera.supernode.v1.QueryPayoutHistoryRequest";
+  value: QueryPayoutHistoryRequestAmino;
+}
+/**
+ * @name QueryPayoutHistoryResponse
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPayoutHistoryResponse
+ */
+export interface QueryPayoutHistoryResponse {
+  entries: PayoutHistoryEntry[];
+  pagination?: PageResponse;
+}
+export interface QueryPayoutHistoryResponseProtoMsg {
+  typeUrl: "/lumera.supernode.v1.QueryPayoutHistoryResponse";
+  value: Uint8Array;
+}
+/**
+ * @name QueryPayoutHistoryResponseAmino
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPayoutHistoryResponse
+ */
+export interface QueryPayoutHistoryResponseAmino {
+  entries: PayoutHistoryEntryAmino[];
+  pagination?: PageResponseAmino;
+}
+export interface QueryPayoutHistoryResponseAminoMsg {
+  type: "/lumera.supernode.v1.QueryPayoutHistoryResponse";
+  value: QueryPayoutHistoryResponseAmino;
 }
 function createBaseQueryParamsRequest(): QueryParamsRequest {
   return {};
@@ -1300,5 +1527,730 @@ export const QueryGetMetricsResponse = {
       return;
     }
     SupernodeMetricsState.registerTypeUrl();
+  }
+};
+function createBaseQueryPoolStateRequest(): QueryPoolStateRequest {
+  return {};
+}
+/**
+ * QueryPoolStateRequest is request type for the Query/PoolState RPC method.
+ * @name QueryPoolStateRequest
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPoolStateRequest
+ */
+export const QueryPoolStateRequest = {
+  typeUrl: "/lumera.supernode.v1.QueryPoolStateRequest",
+  is(o: any): o is QueryPoolStateRequest {
+    return o && o.$typeUrl === QueryPoolStateRequest.typeUrl;
+  },
+  isAmino(o: any): o is QueryPoolStateRequestAmino {
+    return o && o.$typeUrl === QueryPoolStateRequest.typeUrl;
+  },
+  encode(_: QueryPoolStateRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryPoolStateRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryPoolStateRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: DeepPartial<QueryPoolStateRequest>): QueryPoolStateRequest {
+    const message = createBaseQueryPoolStateRequest();
+    return message;
+  },
+  fromAmino(_: QueryPoolStateRequestAmino): QueryPoolStateRequest {
+    const message = createBaseQueryPoolStateRequest();
+    return message;
+  },
+  toAmino(_: QueryPoolStateRequest): QueryPoolStateRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: QueryPoolStateRequestAminoMsg): QueryPoolStateRequest {
+    return QueryPoolStateRequest.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QueryPoolStateRequestProtoMsg): QueryPoolStateRequest {
+    return QueryPoolStateRequest.decode(message.value);
+  },
+  toProto(message: QueryPoolStateRequest): Uint8Array {
+    return QueryPoolStateRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryPoolStateRequest): QueryPoolStateRequestProtoMsg {
+    return {
+      typeUrl: "/lumera.supernode.v1.QueryPoolStateRequest",
+      value: QueryPoolStateRequest.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {}
+};
+function createBaseQueryPoolStateResponse(): QueryPoolStateResponse {
+  return {
+    balance: [],
+    lastDistributionHeight: BigInt(0),
+    totalDistributed: [],
+    eligibleSnCount: BigInt(0)
+  };
+}
+/**
+ * QueryPoolStateResponse is response type for the Query/PoolState RPC method.
+ * @name QueryPoolStateResponse
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPoolStateResponse
+ */
+export const QueryPoolStateResponse = {
+  typeUrl: "/lumera.supernode.v1.QueryPoolStateResponse",
+  is(o: any): o is QueryPoolStateResponse {
+    return o && (o.$typeUrl === QueryPoolStateResponse.typeUrl || Array.isArray(o.balance) && (!o.balance.length || Coin.is(o.balance[0])) && typeof o.lastDistributionHeight === "bigint" && Array.isArray(o.totalDistributed) && (!o.totalDistributed.length || Coin.is(o.totalDistributed[0])) && typeof o.eligibleSnCount === "bigint");
+  },
+  isAmino(o: any): o is QueryPoolStateResponseAmino {
+    return o && (o.$typeUrl === QueryPoolStateResponse.typeUrl || Array.isArray(o.balance) && (!o.balance.length || Coin.isAmino(o.balance[0])) && typeof o.last_distribution_height === "bigint" && Array.isArray(o.total_distributed) && (!o.total_distributed.length || Coin.isAmino(o.total_distributed[0])) && typeof o.eligible_sn_count === "bigint");
+  },
+  encode(message: QueryPoolStateResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.balance) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.lastDistributionHeight !== BigInt(0)) {
+      writer.uint32(16).int64(message.lastDistributionHeight);
+    }
+    for (const v of message.totalDistributed) {
+      Coin.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.eligibleSnCount !== BigInt(0)) {
+      writer.uint32(32).uint64(message.eligibleSnCount);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryPoolStateResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryPoolStateResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.balance.push(Coin.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.lastDistributionHeight = reader.int64();
+          break;
+        case 3:
+          message.totalDistributed.push(Coin.decode(reader, reader.uint32()));
+          break;
+        case 4:
+          message.eligibleSnCount = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<QueryPoolStateResponse>): QueryPoolStateResponse {
+    const message = createBaseQueryPoolStateResponse();
+    message.balance = object.balance?.map(e => Coin.fromPartial(e)) || [];
+    message.lastDistributionHeight = object.lastDistributionHeight !== undefined && object.lastDistributionHeight !== null ? BigInt(object.lastDistributionHeight.toString()) : BigInt(0);
+    message.totalDistributed = object.totalDistributed?.map(e => Coin.fromPartial(e)) || [];
+    message.eligibleSnCount = object.eligibleSnCount !== undefined && object.eligibleSnCount !== null ? BigInt(object.eligibleSnCount.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: QueryPoolStateResponseAmino): QueryPoolStateResponse {
+    const message = createBaseQueryPoolStateResponse();
+    message.balance = object.balance?.map(e => Coin.fromAmino(e)) || [];
+    if (object.last_distribution_height !== undefined && object.last_distribution_height !== null) {
+      message.lastDistributionHeight = BigInt(object.last_distribution_height);
+    }
+    message.totalDistributed = object.total_distributed?.map(e => Coin.fromAmino(e)) || [];
+    if (object.eligible_sn_count !== undefined && object.eligible_sn_count !== null) {
+      message.eligibleSnCount = BigInt(object.eligible_sn_count);
+    }
+    return message;
+  },
+  toAmino(message: QueryPoolStateResponse): QueryPoolStateResponseAmino {
+    const obj: any = {};
+    if (message.balance) {
+      obj.balance = message.balance.map(e => e ? Coin.toAmino(e) : undefined);
+    } else {
+      obj.balance = message.balance;
+    }
+    obj.last_distribution_height = message.lastDistributionHeight !== BigInt(0) ? message.lastDistributionHeight?.toString() : undefined;
+    if (message.totalDistributed) {
+      obj.total_distributed = message.totalDistributed.map(e => e ? Coin.toAmino(e) : undefined);
+    } else {
+      obj.total_distributed = message.totalDistributed;
+    }
+    obj.eligible_sn_count = message.eligibleSnCount !== BigInt(0) ? message.eligibleSnCount?.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QueryPoolStateResponseAminoMsg): QueryPoolStateResponse {
+    return QueryPoolStateResponse.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QueryPoolStateResponseProtoMsg): QueryPoolStateResponse {
+    return QueryPoolStateResponse.decode(message.value);
+  },
+  toProto(message: QueryPoolStateResponse): Uint8Array {
+    return QueryPoolStateResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryPoolStateResponse): QueryPoolStateResponseProtoMsg {
+    return {
+      typeUrl: "/lumera.supernode.v1.QueryPoolStateResponse",
+      value: QueryPoolStateResponse.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {
+    if (!GlobalDecoderRegistry.registerExistingTypeUrl(QueryPoolStateResponse.typeUrl)) {
+      return;
+    }
+    Coin.registerTypeUrl();
+  }
+};
+function createBaseQuerySNEligibilityRequest(): QuerySNEligibilityRequest {
+  return {
+    validatorAddress: ""
+  };
+}
+/**
+ * QuerySNEligibilityRequest is request type for the Query/SNEligibility RPC method.
+ * @name QuerySNEligibilityRequest
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QuerySNEligibilityRequest
+ */
+export const QuerySNEligibilityRequest = {
+  typeUrl: "/lumera.supernode.v1.QuerySNEligibilityRequest",
+  is(o: any): o is QuerySNEligibilityRequest {
+    return o && (o.$typeUrl === QuerySNEligibilityRequest.typeUrl || typeof o.validatorAddress === "string");
+  },
+  isAmino(o: any): o is QuerySNEligibilityRequestAmino {
+    return o && (o.$typeUrl === QuerySNEligibilityRequest.typeUrl || typeof o.validator_address === "string");
+  },
+  encode(message: QuerySNEligibilityRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.validatorAddress !== "") {
+      writer.uint32(10).string(message.validatorAddress);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): QuerySNEligibilityRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySNEligibilityRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.validatorAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<QuerySNEligibilityRequest>): QuerySNEligibilityRequest {
+    const message = createBaseQuerySNEligibilityRequest();
+    message.validatorAddress = object.validatorAddress ?? "";
+    return message;
+  },
+  fromAmino(object: QuerySNEligibilityRequestAmino): QuerySNEligibilityRequest {
+    const message = createBaseQuerySNEligibilityRequest();
+    if (object.validator_address !== undefined && object.validator_address !== null) {
+      message.validatorAddress = object.validator_address;
+    }
+    return message;
+  },
+  toAmino(message: QuerySNEligibilityRequest): QuerySNEligibilityRequestAmino {
+    const obj: any = {};
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySNEligibilityRequestAminoMsg): QuerySNEligibilityRequest {
+    return QuerySNEligibilityRequest.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySNEligibilityRequestProtoMsg): QuerySNEligibilityRequest {
+    return QuerySNEligibilityRequest.decode(message.value);
+  },
+  toProto(message: QuerySNEligibilityRequest): Uint8Array {
+    return QuerySNEligibilityRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySNEligibilityRequest): QuerySNEligibilityRequestProtoMsg {
+    return {
+      typeUrl: "/lumera.supernode.v1.QuerySNEligibilityRequest",
+      value: QuerySNEligibilityRequest.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {}
+};
+function createBaseQuerySNEligibilityResponse(): QuerySNEligibilityResponse {
+  return {
+    eligible: false,
+    reason: "",
+    cascadeKademliaDbBytes: 0,
+    smoothedWeight: 0
+  };
+}
+/**
+ * QuerySNEligibilityResponse is response type for the Query/SNEligibility RPC method.
+ * @name QuerySNEligibilityResponse
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QuerySNEligibilityResponse
+ */
+export const QuerySNEligibilityResponse = {
+  typeUrl: "/lumera.supernode.v1.QuerySNEligibilityResponse",
+  is(o: any): o is QuerySNEligibilityResponse {
+    return o && (o.$typeUrl === QuerySNEligibilityResponse.typeUrl || typeof o.eligible === "boolean" && typeof o.reason === "string" && typeof o.cascadeKademliaDbBytes === "number" && typeof o.smoothedWeight === "number");
+  },
+  isAmino(o: any): o is QuerySNEligibilityResponseAmino {
+    return o && (o.$typeUrl === QuerySNEligibilityResponse.typeUrl || typeof o.eligible === "boolean" && typeof o.reason === "string" && typeof o.cascade_kademlia_db_bytes === "number" && typeof o.smoothed_weight === "number");
+  },
+  encode(message: QuerySNEligibilityResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.eligible === true) {
+      writer.uint32(8).bool(message.eligible);
+    }
+    if (message.reason !== "") {
+      writer.uint32(18).string(message.reason);
+    }
+    if (message.cascadeKademliaDbBytes !== 0) {
+      writer.uint32(25).double(message.cascadeKademliaDbBytes);
+    }
+    if (message.smoothedWeight !== 0) {
+      writer.uint32(33).double(message.smoothedWeight);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): QuerySNEligibilityResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySNEligibilityResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.eligible = reader.bool();
+          break;
+        case 2:
+          message.reason = reader.string();
+          break;
+        case 3:
+          message.cascadeKademliaDbBytes = reader.double();
+          break;
+        case 4:
+          message.smoothedWeight = reader.double();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<QuerySNEligibilityResponse>): QuerySNEligibilityResponse {
+    const message = createBaseQuerySNEligibilityResponse();
+    message.eligible = object.eligible ?? false;
+    message.reason = object.reason ?? "";
+    message.cascadeKademliaDbBytes = object.cascadeKademliaDbBytes ?? 0;
+    message.smoothedWeight = object.smoothedWeight ?? 0;
+    return message;
+  },
+  fromAmino(object: QuerySNEligibilityResponseAmino): QuerySNEligibilityResponse {
+    const message = createBaseQuerySNEligibilityResponse();
+    if (object.eligible !== undefined && object.eligible !== null) {
+      message.eligible = object.eligible;
+    }
+    if (object.reason !== undefined && object.reason !== null) {
+      message.reason = object.reason;
+    }
+    if (object.cascade_kademlia_db_bytes !== undefined && object.cascade_kademlia_db_bytes !== null) {
+      message.cascadeKademliaDbBytes = object.cascade_kademlia_db_bytes;
+    }
+    if (object.smoothed_weight !== undefined && object.smoothed_weight !== null) {
+      message.smoothedWeight = object.smoothed_weight;
+    }
+    return message;
+  },
+  toAmino(message: QuerySNEligibilityResponse): QuerySNEligibilityResponseAmino {
+    const obj: any = {};
+    obj.eligible = message.eligible === false ? undefined : message.eligible;
+    obj.reason = message.reason === "" ? undefined : message.reason;
+    obj.cascade_kademlia_db_bytes = message.cascadeKademliaDbBytes === 0 ? undefined : message.cascadeKademliaDbBytes;
+    obj.smoothed_weight = message.smoothedWeight === 0 ? undefined : message.smoothedWeight;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySNEligibilityResponseAminoMsg): QuerySNEligibilityResponse {
+    return QuerySNEligibilityResponse.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySNEligibilityResponseProtoMsg): QuerySNEligibilityResponse {
+    return QuerySNEligibilityResponse.decode(message.value);
+  },
+  toProto(message: QuerySNEligibilityResponse): Uint8Array {
+    return QuerySNEligibilityResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySNEligibilityResponse): QuerySNEligibilityResponseProtoMsg {
+    return {
+      typeUrl: "/lumera.supernode.v1.QuerySNEligibilityResponse",
+      value: QuerySNEligibilityResponse.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {}
+};
+function createBasePayoutHistoryEntry(): PayoutHistoryEntry {
+  return {
+    height: BigInt(0),
+    validatorAddress: "",
+    supernodeAccount: "",
+    amount: [],
+    rawBytes: 0,
+    smoothedBytes: 0,
+    effectiveWeight: 0,
+    rampWeight: 0
+  };
+}
+/**
+ * @name PayoutHistoryEntry
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.PayoutHistoryEntry
+ */
+export const PayoutHistoryEntry = {
+  typeUrl: "/lumera.supernode.v1.PayoutHistoryEntry",
+  is(o: any): o is PayoutHistoryEntry {
+    return o && (o.$typeUrl === PayoutHistoryEntry.typeUrl || typeof o.height === "bigint" && typeof o.validatorAddress === "string" && typeof o.supernodeAccount === "string" && Array.isArray(o.amount) && (!o.amount.length || Coin.is(o.amount[0])) && typeof o.rawBytes === "number" && typeof o.smoothedBytes === "number" && typeof o.effectiveWeight === "number" && typeof o.rampWeight === "number");
+  },
+  isAmino(o: any): o is PayoutHistoryEntryAmino {
+    return o && (o.$typeUrl === PayoutHistoryEntry.typeUrl || typeof o.height === "bigint" && typeof o.validator_address === "string" && typeof o.supernode_account === "string" && Array.isArray(o.amount) && (!o.amount.length || Coin.isAmino(o.amount[0])) && typeof o.raw_bytes === "number" && typeof o.smoothed_bytes === "number" && typeof o.effective_weight === "number" && typeof o.ramp_weight === "number");
+  },
+  encode(message: PayoutHistoryEntry, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.height !== BigInt(0)) {
+      writer.uint32(8).int64(message.height);
+    }
+    if (message.validatorAddress !== "") {
+      writer.uint32(18).string(message.validatorAddress);
+    }
+    if (message.supernodeAccount !== "") {
+      writer.uint32(26).string(message.supernodeAccount);
+    }
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.rawBytes !== 0) {
+      writer.uint32(41).double(message.rawBytes);
+    }
+    if (message.smoothedBytes !== 0) {
+      writer.uint32(49).double(message.smoothedBytes);
+    }
+    if (message.effectiveWeight !== 0) {
+      writer.uint32(57).double(message.effectiveWeight);
+    }
+    if (message.rampWeight !== 0) {
+      writer.uint32(65).double(message.rampWeight);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): PayoutHistoryEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePayoutHistoryEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.height = reader.int64();
+          break;
+        case 2:
+          message.validatorAddress = reader.string();
+          break;
+        case 3:
+          message.supernodeAccount = reader.string();
+          break;
+        case 4:
+          message.amount.push(Coin.decode(reader, reader.uint32()));
+          break;
+        case 5:
+          message.rawBytes = reader.double();
+          break;
+        case 6:
+          message.smoothedBytes = reader.double();
+          break;
+        case 7:
+          message.effectiveWeight = reader.double();
+          break;
+        case 8:
+          message.rampWeight = reader.double();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<PayoutHistoryEntry>): PayoutHistoryEntry {
+    const message = createBasePayoutHistoryEntry();
+    message.height = object.height !== undefined && object.height !== null ? BigInt(object.height.toString()) : BigInt(0);
+    message.validatorAddress = object.validatorAddress ?? "";
+    message.supernodeAccount = object.supernodeAccount ?? "";
+    message.amount = object.amount?.map(e => Coin.fromPartial(e)) || [];
+    message.rawBytes = object.rawBytes ?? 0;
+    message.smoothedBytes = object.smoothedBytes ?? 0;
+    message.effectiveWeight = object.effectiveWeight ?? 0;
+    message.rampWeight = object.rampWeight ?? 0;
+    return message;
+  },
+  fromAmino(object: PayoutHistoryEntryAmino): PayoutHistoryEntry {
+    const message = createBasePayoutHistoryEntry();
+    if (object.height !== undefined && object.height !== null) {
+      message.height = BigInt(object.height);
+    }
+    if (object.validator_address !== undefined && object.validator_address !== null) {
+      message.validatorAddress = object.validator_address;
+    }
+    if (object.supernode_account !== undefined && object.supernode_account !== null) {
+      message.supernodeAccount = object.supernode_account;
+    }
+    message.amount = object.amount?.map(e => Coin.fromAmino(e)) || [];
+    if (object.raw_bytes !== undefined && object.raw_bytes !== null) {
+      message.rawBytes = object.raw_bytes;
+    }
+    if (object.smoothed_bytes !== undefined && object.smoothed_bytes !== null) {
+      message.smoothedBytes = object.smoothed_bytes;
+    }
+    if (object.effective_weight !== undefined && object.effective_weight !== null) {
+      message.effectiveWeight = object.effective_weight;
+    }
+    if (object.ramp_weight !== undefined && object.ramp_weight !== null) {
+      message.rampWeight = object.ramp_weight;
+    }
+    return message;
+  },
+  toAmino(message: PayoutHistoryEntry): PayoutHistoryEntryAmino {
+    const obj: any = {};
+    obj.height = message.height !== BigInt(0) ? message.height?.toString() : undefined;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.supernode_account = message.supernodeAccount === "" ? undefined : message.supernodeAccount;
+    if (message.amount) {
+      obj.amount = message.amount.map(e => e ? Coin.toAmino(e) : undefined);
+    } else {
+      obj.amount = message.amount;
+    }
+    obj.raw_bytes = message.rawBytes === 0 ? undefined : message.rawBytes;
+    obj.smoothed_bytes = message.smoothedBytes === 0 ? undefined : message.smoothedBytes;
+    obj.effective_weight = message.effectiveWeight === 0 ? undefined : message.effectiveWeight;
+    obj.ramp_weight = message.rampWeight === 0 ? undefined : message.rampWeight;
+    return obj;
+  },
+  fromAminoMsg(object: PayoutHistoryEntryAminoMsg): PayoutHistoryEntry {
+    return PayoutHistoryEntry.fromAmino(object.value);
+  },
+  fromProtoMsg(message: PayoutHistoryEntryProtoMsg): PayoutHistoryEntry {
+    return PayoutHistoryEntry.decode(message.value);
+  },
+  toProto(message: PayoutHistoryEntry): Uint8Array {
+    return PayoutHistoryEntry.encode(message).finish();
+  },
+  toProtoMsg(message: PayoutHistoryEntry): PayoutHistoryEntryProtoMsg {
+    return {
+      typeUrl: "/lumera.supernode.v1.PayoutHistoryEntry",
+      value: PayoutHistoryEntry.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {
+    if (!GlobalDecoderRegistry.registerExistingTypeUrl(PayoutHistoryEntry.typeUrl)) {
+      return;
+    }
+    Coin.registerTypeUrl();
+  }
+};
+function createBaseQueryPayoutHistoryRequest(): QueryPayoutHistoryRequest {
+  return {
+    validatorAddress: "",
+    pagination: undefined
+  };
+}
+/**
+ * @name QueryPayoutHistoryRequest
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPayoutHistoryRequest
+ */
+export const QueryPayoutHistoryRequest = {
+  typeUrl: "/lumera.supernode.v1.QueryPayoutHistoryRequest",
+  is(o: any): o is QueryPayoutHistoryRequest {
+    return o && (o.$typeUrl === QueryPayoutHistoryRequest.typeUrl || typeof o.validatorAddress === "string");
+  },
+  isAmino(o: any): o is QueryPayoutHistoryRequestAmino {
+    return o && (o.$typeUrl === QueryPayoutHistoryRequest.typeUrl || typeof o.validator_address === "string");
+  },
+  encode(message: QueryPayoutHistoryRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.validatorAddress !== "") {
+      writer.uint32(10).string(message.validatorAddress);
+    }
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryPayoutHistoryRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryPayoutHistoryRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.validatorAddress = reader.string();
+          break;
+        case 2:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<QueryPayoutHistoryRequest>): QueryPayoutHistoryRequest {
+    const message = createBaseQueryPayoutHistoryRequest();
+    message.validatorAddress = object.validatorAddress ?? "";
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
+    return message;
+  },
+  fromAmino(object: QueryPayoutHistoryRequestAmino): QueryPayoutHistoryRequest {
+    const message = createBaseQueryPayoutHistoryRequest();
+    if (object.validator_address !== undefined && object.validator_address !== null) {
+      message.validatorAddress = object.validator_address;
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromAmino(object.pagination);
+    }
+    return message;
+  },
+  toAmino(message: QueryPayoutHistoryRequest): QueryPayoutHistoryRequestAmino {
+    const obj: any = {};
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QueryPayoutHistoryRequestAminoMsg): QueryPayoutHistoryRequest {
+    return QueryPayoutHistoryRequest.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QueryPayoutHistoryRequestProtoMsg): QueryPayoutHistoryRequest {
+    return QueryPayoutHistoryRequest.decode(message.value);
+  },
+  toProto(message: QueryPayoutHistoryRequest): Uint8Array {
+    return QueryPayoutHistoryRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryPayoutHistoryRequest): QueryPayoutHistoryRequestProtoMsg {
+    return {
+      typeUrl: "/lumera.supernode.v1.QueryPayoutHistoryRequest",
+      value: QueryPayoutHistoryRequest.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {
+    if (!GlobalDecoderRegistry.registerExistingTypeUrl(QueryPayoutHistoryRequest.typeUrl)) {
+      return;
+    }
+    PageRequest.registerTypeUrl();
+  }
+};
+function createBaseQueryPayoutHistoryResponse(): QueryPayoutHistoryResponse {
+  return {
+    entries: [],
+    pagination: undefined
+  };
+}
+/**
+ * @name QueryPayoutHistoryResponse
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.QueryPayoutHistoryResponse
+ */
+export const QueryPayoutHistoryResponse = {
+  typeUrl: "/lumera.supernode.v1.QueryPayoutHistoryResponse",
+  is(o: any): o is QueryPayoutHistoryResponse {
+    return o && (o.$typeUrl === QueryPayoutHistoryResponse.typeUrl || Array.isArray(o.entries) && (!o.entries.length || PayoutHistoryEntry.is(o.entries[0])));
+  },
+  isAmino(o: any): o is QueryPayoutHistoryResponseAmino {
+    return o && (o.$typeUrl === QueryPayoutHistoryResponse.typeUrl || Array.isArray(o.entries) && (!o.entries.length || PayoutHistoryEntry.isAmino(o.entries[0])));
+  },
+  encode(message: QueryPayoutHistoryResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.entries) {
+      PayoutHistoryEntry.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryPayoutHistoryResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryPayoutHistoryResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.entries.push(PayoutHistoryEntry.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<QueryPayoutHistoryResponse>): QueryPayoutHistoryResponse {
+    const message = createBaseQueryPayoutHistoryResponse();
+    message.entries = object.entries?.map(e => PayoutHistoryEntry.fromPartial(e)) || [];
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
+    return message;
+  },
+  fromAmino(object: QueryPayoutHistoryResponseAmino): QueryPayoutHistoryResponse {
+    const message = createBaseQueryPayoutHistoryResponse();
+    message.entries = object.entries?.map(e => PayoutHistoryEntry.fromAmino(e)) || [];
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromAmino(object.pagination);
+    }
+    return message;
+  },
+  toAmino(message: QueryPayoutHistoryResponse): QueryPayoutHistoryResponseAmino {
+    const obj: any = {};
+    if (message.entries) {
+      obj.entries = message.entries.map(e => e ? PayoutHistoryEntry.toAmino(e) : undefined);
+    } else {
+      obj.entries = message.entries;
+    }
+    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QueryPayoutHistoryResponseAminoMsg): QueryPayoutHistoryResponse {
+    return QueryPayoutHistoryResponse.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QueryPayoutHistoryResponseProtoMsg): QueryPayoutHistoryResponse {
+    return QueryPayoutHistoryResponse.decode(message.value);
+  },
+  toProto(message: QueryPayoutHistoryResponse): Uint8Array {
+    return QueryPayoutHistoryResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryPayoutHistoryResponse): QueryPayoutHistoryResponseProtoMsg {
+    return {
+      typeUrl: "/lumera.supernode.v1.QueryPayoutHistoryResponse",
+      value: QueryPayoutHistoryResponse.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {
+    if (!GlobalDecoderRegistry.registerExistingTypeUrl(QueryPayoutHistoryResponse.typeUrl)) {
+      return;
+    }
+    PayoutHistoryEntry.registerTypeUrl();
+    PageResponse.registerTypeUrl();
   }
 };

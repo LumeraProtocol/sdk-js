@@ -111,6 +111,10 @@ export interface SupernodeMetrics {
    * Tri-state port reporting for required ports.
    */
   openPorts: PortStatus[];
+  /**
+   * Cascade Kademlia DB size in bytes (LEP-4 metric for Everlight payouts).
+   */
+  cascadeKademliaDbBytes: number;
 }
 export interface SupernodeMetricsProtoMsg {
   typeUrl: "/lumera.supernode.v1.SupernodeMetrics";
@@ -155,6 +159,10 @@ export interface SupernodeMetricsAmino {
    * Tri-state port reporting for required ports.
    */
   open_ports: PortStatusAmino[];
+  /**
+   * Cascade Kademlia DB size in bytes (LEP-4 metric for Everlight payouts).
+   */
+  cascade_kademlia_db_bytes: number;
 }
 export interface SupernodeMetricsAminoMsg {
   type: "/lumera.supernode.v1.SupernodeMetrics";
@@ -295,7 +303,8 @@ function createBaseSupernodeMetrics(): SupernodeMetrics {
     diskFreeGb: 0,
     uptimeSeconds: 0,
     peersCount: 0,
-    openPorts: []
+    openPorts: [],
+    cascadeKademliaDbBytes: 0
   };
 }
 /**
@@ -307,10 +316,10 @@ function createBaseSupernodeMetrics(): SupernodeMetrics {
 export const SupernodeMetrics = {
   typeUrl: "/lumera.supernode.v1.SupernodeMetrics",
   is(o: any): o is SupernodeMetrics {
-    return o && (o.$typeUrl === SupernodeMetrics.typeUrl || typeof o.versionMajor === "number" && typeof o.versionMinor === "number" && typeof o.versionPatch === "number" && typeof o.cpuCoresTotal === "number" && typeof o.cpuUsagePercent === "number" && typeof o.memTotalGb === "number" && typeof o.memUsagePercent === "number" && typeof o.memFreeGb === "number" && typeof o.diskTotalGb === "number" && typeof o.diskUsagePercent === "number" && typeof o.diskFreeGb === "number" && typeof o.uptimeSeconds === "number" && typeof o.peersCount === "number" && Array.isArray(o.openPorts) && (!o.openPorts.length || PortStatus.is(o.openPorts[0])));
+    return o && (o.$typeUrl === SupernodeMetrics.typeUrl || typeof o.versionMajor === "number" && typeof o.versionMinor === "number" && typeof o.versionPatch === "number" && typeof o.cpuCoresTotal === "number" && typeof o.cpuUsagePercent === "number" && typeof o.memTotalGb === "number" && typeof o.memUsagePercent === "number" && typeof o.memFreeGb === "number" && typeof o.diskTotalGb === "number" && typeof o.diskUsagePercent === "number" && typeof o.diskFreeGb === "number" && typeof o.uptimeSeconds === "number" && typeof o.peersCount === "number" && Array.isArray(o.openPorts) && (!o.openPorts.length || PortStatus.is(o.openPorts[0])) && typeof o.cascadeKademliaDbBytes === "number");
   },
   isAmino(o: any): o is SupernodeMetricsAmino {
-    return o && (o.$typeUrl === SupernodeMetrics.typeUrl || typeof o.version_major === "number" && typeof o.version_minor === "number" && typeof o.version_patch === "number" && typeof o.cpu_cores_total === "number" && typeof o.cpu_usage_percent === "number" && typeof o.mem_total_gb === "number" && typeof o.mem_usage_percent === "number" && typeof o.mem_free_gb === "number" && typeof o.disk_total_gb === "number" && typeof o.disk_usage_percent === "number" && typeof o.disk_free_gb === "number" && typeof o.uptime_seconds === "number" && typeof o.peers_count === "number" && Array.isArray(o.open_ports) && (!o.open_ports.length || PortStatus.isAmino(o.open_ports[0])));
+    return o && (o.$typeUrl === SupernodeMetrics.typeUrl || typeof o.version_major === "number" && typeof o.version_minor === "number" && typeof o.version_patch === "number" && typeof o.cpu_cores_total === "number" && typeof o.cpu_usage_percent === "number" && typeof o.mem_total_gb === "number" && typeof o.mem_usage_percent === "number" && typeof o.mem_free_gb === "number" && typeof o.disk_total_gb === "number" && typeof o.disk_usage_percent === "number" && typeof o.disk_free_gb === "number" && typeof o.uptime_seconds === "number" && typeof o.peers_count === "number" && Array.isArray(o.open_ports) && (!o.open_ports.length || PortStatus.isAmino(o.open_ports[0])) && typeof o.cascade_kademlia_db_bytes === "number");
   },
   encode(message: SupernodeMetrics, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.versionMajor !== 0) {
@@ -354,6 +363,9 @@ export const SupernodeMetrics = {
     }
     for (const v of message.openPorts) {
       PortStatus.encode(v!, writer.uint32(114).fork()).ldelim();
+    }
+    if (message.cascadeKademliaDbBytes !== 0) {
+      writer.uint32(121).double(message.cascadeKademliaDbBytes);
     }
     return writer;
   },
@@ -406,6 +418,9 @@ export const SupernodeMetrics = {
         case 14:
           message.openPorts.push(PortStatus.decode(reader, reader.uint32()));
           break;
+        case 15:
+          message.cascadeKademliaDbBytes = reader.double();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -429,6 +444,7 @@ export const SupernodeMetrics = {
     message.uptimeSeconds = object.uptimeSeconds ?? 0;
     message.peersCount = object.peersCount ?? 0;
     message.openPorts = object.openPorts?.map(e => PortStatus.fromPartial(e)) || [];
+    message.cascadeKademliaDbBytes = object.cascadeKademliaDbBytes ?? 0;
     return message;
   },
   fromAmino(object: SupernodeMetricsAmino): SupernodeMetrics {
@@ -473,6 +489,9 @@ export const SupernodeMetrics = {
       message.peersCount = object.peers_count;
     }
     message.openPorts = object.open_ports?.map(e => PortStatus.fromAmino(e)) || [];
+    if (object.cascade_kademlia_db_bytes !== undefined && object.cascade_kademlia_db_bytes !== null) {
+      message.cascadeKademliaDbBytes = object.cascade_kademlia_db_bytes;
+    }
     return message;
   },
   toAmino(message: SupernodeMetrics): SupernodeMetricsAmino {
@@ -495,6 +514,7 @@ export const SupernodeMetrics = {
     } else {
       obj.open_ports = message.openPorts;
     }
+    obj.cascade_kademlia_db_bytes = message.cascadeKademliaDbBytes === 0 ? undefined : message.cascadeKademliaDbBytes;
     return obj;
   },
   fromAminoMsg(object: SupernodeMetricsAminoMsg): SupernodeMetrics {
