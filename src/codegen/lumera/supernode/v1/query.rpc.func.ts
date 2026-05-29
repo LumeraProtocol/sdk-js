@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable */
 import { buildQuery } from "../../../helper-func-types";
-import { QueryParamsRequest, QueryParamsResponse, QueryGetSuperNodeRequest, QueryGetSuperNodeResponse, QueryGetSuperNodeBySuperNodeAddressRequest, QueryGetSuperNodeBySuperNodeAddressResponse, QueryListSuperNodesRequest, QueryListSuperNodesResponse, QueryGetTopSuperNodesForBlockRequest, QueryGetTopSuperNodesForBlockResponse, QueryGetMetricsRequest, QueryGetMetricsResponse } from "./query";
+import { QueryParamsRequest, QueryParamsResponse, QueryGetSuperNodeRequest, QueryGetSuperNodeResponse, QueryGetSuperNodeBySuperNodeAddressRequest, QueryGetSuperNodeBySuperNodeAddressResponse, QueryListSuperNodesRequest, QueryListSuperNodesResponse, QueryGetTopSuperNodesForBlockRequest, QueryGetTopSuperNodesForBlockResponse, QueryGetMetricsRequest, QueryGetMetricsResponse, QueryPoolStateRequest, QueryPoolStateResponse, QuerySNEligibilityRequest, QuerySNEligibilityResponse, QueryPayoutHistoryRequest, QueryPayoutHistoryResponse } from "./query";
 /**
  * Parameters queries the parameters of the module.
  * @name getParams
@@ -79,4 +79,43 @@ export const getGetMetrics = buildQuery<QueryGetMetricsRequest, QueryGetMetricsR
   service: "lumera.supernode.v1.Query",
   method: "GetMetrics",
   deps: [QueryGetMetricsRequest, QueryGetMetricsResponse]
+});
+/**
+ * PoolState queries the current state of the Everlight pool.
+ * @name getPoolState
+ * @package lumera.supernode.v1
+ * @see proto service: lumera.supernode.v1.PoolState
+ */
+export const getPoolState = buildQuery<QueryPoolStateRequest, QueryPoolStateResponse>({
+  encode: QueryPoolStateRequest.encode,
+  decode: QueryPoolStateResponse.decode,
+  service: "lumera.supernode.v1.Query",
+  method: "PoolState",
+  deps: [QueryPoolStateRequest, QueryPoolStateResponse]
+});
+/**
+ * SNEligibility queries whether a specific SuperNode is eligible for payouts.
+ * @name getSNEligibility
+ * @package lumera.supernode.v1
+ * @see proto service: lumera.supernode.v1.SNEligibility
+ */
+export const getSNEligibility = buildQuery<QuerySNEligibilityRequest, QuerySNEligibilityResponse>({
+  encode: QuerySNEligibilityRequest.encode,
+  decode: QuerySNEligibilityResponse.decode,
+  service: "lumera.supernode.v1.Query",
+  method: "SNEligibility",
+  deps: [QuerySNEligibilityRequest, QuerySNEligibilityResponse]
+});
+/**
+ * PayoutHistory returns distribution payout history for a validator.
+ * @name getPayoutHistory
+ * @package lumera.supernode.v1
+ * @see proto service: lumera.supernode.v1.PayoutHistory
+ */
+export const getPayoutHistory = buildQuery<QueryPayoutHistoryRequest, QueryPayoutHistoryResponse>({
+  encode: QueryPayoutHistoryRequest.encode,
+  decode: QueryPayoutHistoryResponse.decode,
+  service: "lumera.supernode.v1.Query",
+  method: "PayoutHistory",
+  deps: [QueryPayoutHistoryRequest, QueryPayoutHistoryResponse]
 });

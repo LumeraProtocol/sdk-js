@@ -3,7 +3,7 @@
 import { TxRpc } from "../../../types";
 import { BinaryReader } from "../../../binary";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { QueryParamsRequest, QueryParamsResponse, QueryGetSuperNodeRequest, QueryGetSuperNodeResponse, QueryGetSuperNodeBySuperNodeAddressRequest, QueryGetSuperNodeBySuperNodeAddressResponse, QueryListSuperNodesRequest, QueryListSuperNodesResponse, QueryGetTopSuperNodesForBlockRequest, QueryGetTopSuperNodesForBlockResponse, QueryGetMetricsRequest, QueryGetMetricsResponse } from "./query";
+import { QueryParamsRequest, QueryParamsResponse, QueryGetSuperNodeRequest, QueryGetSuperNodeResponse, QueryGetSuperNodeBySuperNodeAddressRequest, QueryGetSuperNodeBySuperNodeAddressResponse, QueryListSuperNodesRequest, QueryListSuperNodesResponse, QueryGetTopSuperNodesForBlockRequest, QueryGetTopSuperNodesForBlockResponse, QueryGetMetricsRequest, QueryGetMetricsResponse, QueryPoolStateRequest, QueryPoolStateResponse, QuerySNEligibilityRequest, QuerySNEligibilityResponse, QueryPayoutHistoryRequest, QueryPayoutHistoryResponse } from "./query";
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -18,6 +18,12 @@ export interface Query {
   getTopSuperNodesForBlock(request: QueryGetTopSuperNodesForBlockRequest): Promise<QueryGetTopSuperNodesForBlockResponse>;
   /** Queries the latest metrics state for a validator. */
   getMetrics(request: QueryGetMetricsRequest): Promise<QueryGetMetricsResponse>;
+  /** PoolState queries the current state of the Everlight pool. */
+  poolState(request?: QueryPoolStateRequest): Promise<QueryPoolStateResponse>;
+  /** SNEligibility queries whether a specific SuperNode is eligible for payouts. */
+  sNEligibility(request: QuerySNEligibilityRequest): Promise<QuerySNEligibilityResponse>;
+  /** PayoutHistory returns distribution payout history for a validator. */
+  payoutHistory(request: QueryPayoutHistoryRequest): Promise<QueryPayoutHistoryResponse>;
 }
 export class QueryClientImpl implements Query {
   private readonly rpc: TxRpc;
@@ -62,6 +68,24 @@ export class QueryClientImpl implements Query {
     const promise = this.rpc.request("lumera.supernode.v1.Query", "GetMetrics", data);
     return promise.then(data => QueryGetMetricsResponse.decode(new BinaryReader(data)));
   };
+  /* PoolState queries the current state of the Everlight pool. */
+  poolState = async (request: QueryPoolStateRequest = {}): Promise<QueryPoolStateResponse> => {
+    const data = QueryPoolStateRequest.encode(request).finish();
+    const promise = this.rpc.request("lumera.supernode.v1.Query", "PoolState", data);
+    return promise.then(data => QueryPoolStateResponse.decode(new BinaryReader(data)));
+  };
+  /* SNEligibility queries whether a specific SuperNode is eligible for payouts. */
+  sNEligibility = async (request: QuerySNEligibilityRequest): Promise<QuerySNEligibilityResponse> => {
+    const data = QuerySNEligibilityRequest.encode(request).finish();
+    const promise = this.rpc.request("lumera.supernode.v1.Query", "SNEligibility", data);
+    return promise.then(data => QuerySNEligibilityResponse.decode(new BinaryReader(data)));
+  };
+  /* PayoutHistory returns distribution payout history for a validator. */
+  payoutHistory = async (request: QueryPayoutHistoryRequest): Promise<QueryPayoutHistoryResponse> => {
+    const data = QueryPayoutHistoryRequest.encode(request).finish();
+    const promise = this.rpc.request("lumera.supernode.v1.Query", "PayoutHistory", data);
+    return promise.then(data => QueryPayoutHistoryResponse.decode(new BinaryReader(data)));
+  };
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
@@ -84,6 +108,15 @@ export const createRpcQueryExtension = (base: QueryClient) => {
     },
     getMetrics(request: QueryGetMetricsRequest): Promise<QueryGetMetricsResponse> {
       return queryService.getMetrics(request);
+    },
+    poolState(request?: QueryPoolStateRequest): Promise<QueryPoolStateResponse> {
+      return queryService.poolState(request);
+    },
+    sNEligibility(request: QuerySNEligibilityRequest): Promise<QuerySNEligibilityResponse> {
+      return queryService.sNEligibility(request);
+    },
+    payoutHistory(request: QueryPayoutHistoryRequest): Promise<QueryPayoutHistoryResponse> {
+      return queryService.payoutHistory(request);
     }
   };
 };

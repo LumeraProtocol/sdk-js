@@ -1,223 +1,52 @@
 // @ts-nocheck
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { DeepPartial, isSet, bytesFromBase64, base64FromBytes } from "../../../helpers";
 import { GlobalDecoderRegistry } from "../../../registry";
-import { DeepPartial } from "../../../helpers";
-
 /**
- * HashAlgo enumerates hash algorithms used for LEP-5 availability commitments.
+ * HashAlgo enumerates the supported hash algorithms for availability
+ * commitments.
  */
 export enum HashAlgo {
+  /** HASH_ALGO_UNSPECIFIED - HASH_ALGO_UNSPECIFIED is the zero value; rejected by validation. */
   HASH_ALGO_UNSPECIFIED = 0,
+  /** HASH_ALGO_BLAKE3 - HASH_ALGO_BLAKE3 selects BLAKE3 as the chunk/leaf hash function. */
   HASH_ALGO_BLAKE3 = 1,
+  /** HASH_ALGO_SHA256 - HASH_ALGO_SHA256 selects SHA-256 as the chunk/leaf hash function. */
+  HASH_ALGO_SHA256 = 2,
+  UNRECOGNIZED = -1,
 }
-
-/**
- * AvailabilityCommitment is the LEP-5 on-chain file commitment included
- * during Cascade registration.
- */
-export interface AvailabilityCommitment {
-  commitmentType: string;
-  hashAlgo: HashAlgo;
-  chunkSize: number;
-  totalSize: bigint;
-  numChunks: number;
-  root: Uint8Array;
-  challengeIndices: number[];
+export const HashAlgoAmino = HashAlgo;
+export function hashAlgoFromJSON(object: any): HashAlgo {
+  switch (object) {
+    case 0:
+    case "HASH_ALGO_UNSPECIFIED":
+      return HashAlgo.HASH_ALGO_UNSPECIFIED;
+    case 1:
+    case "HASH_ALGO_BLAKE3":
+      return HashAlgo.HASH_ALGO_BLAKE3;
+    case 2:
+    case "HASH_ALGO_SHA256":
+      return HashAlgo.HASH_ALGO_SHA256;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return HashAlgo.UNRECOGNIZED;
+  }
 }
-export interface AvailabilityCommitmentAmino {
-  commitment_type: string;
-  hash_algo: number;
-  chunk_size: number;
-  total_size: string;
-  num_chunks: number;
-  root: Uint8Array;
-  challenge_indices: number[];
+export function hashAlgoToJSON(object: HashAlgo): string {
+  switch (object) {
+    case HashAlgo.HASH_ALGO_UNSPECIFIED:
+      return "HASH_ALGO_UNSPECIFIED";
+    case HashAlgo.HASH_ALGO_BLAKE3:
+      return "HASH_ALGO_BLAKE3";
+    case HashAlgo.HASH_ALGO_SHA256:
+      return "HASH_ALGO_SHA256";
+    case HashAlgo.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
 }
-
-/**
- * ChunkProof is a Merkle inclusion proof for one challenged chunk.
- */
-export interface ChunkProof {
-  chunkIndex: number;
-  leafHash: Uint8Array;
-  pathHashes: Uint8Array[];
-  pathDirections: boolean[];
-}
-export interface ChunkProofAmino {
-  chunk_index: number;
-  leaf_hash: Uint8Array;
-  path_hashes: Uint8Array[];
-  path_directions: boolean[];
-}
-
-function createBaseAvailabilityCommitment(): AvailabilityCommitment {
-  return {
-    commitmentType: "",
-    hashAlgo: HashAlgo.HASH_ALGO_UNSPECIFIED,
-    chunkSize: 0,
-    totalSize: BigInt(0),
-    numChunks: 0,
-    root: new Uint8Array(),
-    challengeIndices: []
-  };
-}
-
-export const AvailabilityCommitment = {
-  typeUrl: "/lumera.action.v1.AvailabilityCommitment",
-  encode(message: AvailabilityCommitment, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.commitmentType !== "") {
-      writer.uint32(10).string(message.commitmentType);
-    }
-    if (message.hashAlgo !== HashAlgo.HASH_ALGO_UNSPECIFIED) {
-      writer.uint32(16).int32(message.hashAlgo);
-    }
-    if (message.chunkSize !== 0) {
-      writer.uint32(24).uint32(message.chunkSize);
-    }
-    if (message.totalSize !== BigInt(0)) {
-      writer.uint32(32).uint64(message.totalSize);
-    }
-    if (message.numChunks !== 0) {
-      writer.uint32(40).uint32(message.numChunks);
-    }
-    if (message.root.length !== 0) {
-      writer.uint32(50).bytes(message.root);
-    }
-    writer.uint32(58).fork();
-    for (const v of message.challengeIndices) {
-      writer.uint32(v);
-    }
-    writer.ldelim();
-    return writer;
-  },
-  decode(input: BinaryReader | Uint8Array, length?: number): AvailabilityCommitment {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAvailabilityCommitment();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.commitmentType = reader.string();
-          break;
-        case 2:
-          message.hashAlgo = reader.int32() as HashAlgo;
-          break;
-        case 3:
-          message.chunkSize = reader.uint32();
-          break;
-        case 4:
-          message.totalSize = reader.uint64();
-          break;
-        case 5:
-          message.numChunks = reader.uint32();
-          break;
-        case 6:
-          message.root = reader.bytes();
-          break;
-        case 7:
-          if ((tag & 7) === 2) {
-            const end2 = reader.uint32() + reader.pos;
-            while (reader.pos < end2) {
-              message.challengeIndices.push(reader.uint32());
-            }
-          } else {
-            message.challengeIndices.push(reader.uint32());
-          }
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<AvailabilityCommitment>): AvailabilityCommitment {
-    const message = createBaseAvailabilityCommitment();
-    message.commitmentType = object.commitmentType ?? "";
-    message.hashAlgo = object.hashAlgo ?? HashAlgo.HASH_ALGO_UNSPECIFIED;
-    message.chunkSize = object.chunkSize ?? 0;
-    message.totalSize = object.totalSize !== undefined && object.totalSize !== null ? BigInt(object.totalSize.toString()) : BigInt(0);
-    message.numChunks = object.numChunks ?? 0;
-    message.root = object.root ?? new Uint8Array();
-    message.challengeIndices = object.challengeIndices?.map(e => e) || [];
-    return message;
-  },
-  registerTypeUrl() {}
-};
-
-function createBaseChunkProof(): ChunkProof {
-  return {
-    chunkIndex: 0,
-    leafHash: new Uint8Array(),
-    pathHashes: [],
-    pathDirections: []
-  };
-}
-
-export const ChunkProof = {
-  typeUrl: "/lumera.action.v1.ChunkProof",
-  encode(message: ChunkProof, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.chunkIndex !== 0) {
-      writer.uint32(8).uint32(message.chunkIndex);
-    }
-    if (message.leafHash.length !== 0) {
-      writer.uint32(18).bytes(message.leafHash);
-    }
-    for (const v of message.pathHashes) {
-      writer.uint32(26).bytes(v);
-    }
-    writer.uint32(34).fork();
-    for (const v of message.pathDirections) {
-      writer.bool(v);
-    }
-    writer.ldelim();
-    return writer;
-  },
-  decode(input: BinaryReader | Uint8Array, length?: number): ChunkProof {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseChunkProof();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.chunkIndex = reader.uint32();
-          break;
-        case 2:
-          message.leafHash = reader.bytes();
-          break;
-        case 3:
-          message.pathHashes.push(reader.bytes());
-          break;
-        case 4:
-          if ((tag & 7) === 2) {
-            const end2 = reader.uint32() + reader.pos;
-            while (reader.pos < end2) {
-              message.pathDirections.push(reader.bool());
-            }
-          } else {
-            message.pathDirections.push(reader.bool());
-          }
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<ChunkProof>): ChunkProof {
-    const message = createBaseChunkProof();
-    message.chunkIndex = object.chunkIndex ?? 0;
-    message.leafHash = object.leafHash ?? new Uint8Array();
-    message.pathHashes = object.pathHashes?.map(e => e) || [];
-    message.pathDirections = object.pathDirections?.map(e => e) || [];
-    return message;
-  },
-  registerTypeUrl() {}
-};
 /**
  * SenseMetadata contains information for Sense actions.
  * This metadata is directly embedded in the Action.metadata field.
@@ -297,6 +126,90 @@ export interface SenseMetadataAminoMsg {
   value: SenseMetadataAmino;
 }
 /**
+ * AvailabilityCommitment is the LEP-5 on-chain file commitment included
+ * during Cascade registration.
+ * @name AvailabilityCommitment
+ * @package lumera.action.v1
+ * @see proto type: lumera.action.v1.AvailabilityCommitment
+ */
+export interface AvailabilityCommitment {
+  commitmentType: string;
+  hashAlgo: HashAlgo;
+  chunkSize: number;
+  totalSize: bigint;
+  numChunks: number;
+  root: Uint8Array;
+  /**
+   * Challenge indices chosen by the client at registration time.
+   * The SuperNode must provide Merkle proofs for these exact chunk
+   * indices during finalization. The keeper validates proofs match
+   * these stored indices and the committed root.
+   */
+  challengeIndices: number[];
+}
+export interface AvailabilityCommitmentProtoMsg {
+  typeUrl: "/lumera.action.v1.AvailabilityCommitment";
+  value: Uint8Array;
+}
+/**
+ * AvailabilityCommitment is the LEP-5 on-chain file commitment included
+ * during Cascade registration.
+ * @name AvailabilityCommitmentAmino
+ * @package lumera.action.v1
+ * @see proto type: lumera.action.v1.AvailabilityCommitment
+ */
+export interface AvailabilityCommitmentAmino {
+  commitment_type: string;
+  hash_algo: HashAlgo;
+  chunk_size: number;
+  total_size: string;
+  num_chunks: number;
+  root: string;
+  /**
+   * Challenge indices chosen by the client at registration time.
+   * The SuperNode must provide Merkle proofs for these exact chunk
+   * indices during finalization. The keeper validates proofs match
+   * these stored indices and the committed root.
+   */
+  challenge_indices: number[];
+}
+export interface AvailabilityCommitmentAminoMsg {
+  type: "/lumera.action.v1.AvailabilityCommitment";
+  value: AvailabilityCommitmentAmino;
+}
+/**
+ * ChunkProof is a Merkle inclusion proof for one challenged chunk.
+ * @name ChunkProof
+ * @package lumera.action.v1
+ * @see proto type: lumera.action.v1.ChunkProof
+ */
+export interface ChunkProof {
+  chunkIndex: number;
+  leafHash: Uint8Array;
+  pathHashes: Uint8Array[];
+  pathDirections: boolean[];
+}
+export interface ChunkProofProtoMsg {
+  typeUrl: "/lumera.action.v1.ChunkProof";
+  value: Uint8Array;
+}
+/**
+ * ChunkProof is a Merkle inclusion proof for one challenged chunk.
+ * @name ChunkProofAmino
+ * @package lumera.action.v1
+ * @see proto type: lumera.action.v1.ChunkProof
+ */
+export interface ChunkProofAmino {
+  chunk_index: number;
+  leaf_hash: string;
+  path_hashes: string[];
+  path_directions: boolean[];
+}
+export interface ChunkProofAminoMsg {
+  type: "/lumera.action.v1.ChunkProof";
+  value: ChunkProofAmino;
+}
+/**
  * CascadeMetadata contains information for Cascade actions.
  * This metadata is directly embedded in the Action.metadata field.
  * For RequestAction:
@@ -335,13 +248,16 @@ export interface CascadeMetadata {
    */
   public: boolean;
   /**
-   * LEP-5: Availability commitment (Merkle root + challenge indices)
+   * LEP-5 fields
    */
   availabilityCommitment?: AvailabilityCommitment;
-  /**
-   * LEP-5: Chunk proofs submitted during finalization
-   */
   chunkProofs: ChunkProof[];
+  /**
+   * LEP-6 canonical artifact counts committed at finalization.
+   * These values anchor deterministic artifact ordinal selection on-chain.
+   */
+  indexArtifactCount: number;
+  symbolArtifactCount: number;
 }
 export interface CascadeMetadataProtoMsg {
   typeUrl: "/lumera.action.v1.CascadeMetadata";
@@ -385,8 +301,17 @@ export interface CascadeMetadataAmino {
    * or restricted actions.
    */
   public: boolean;
+  /**
+   * LEP-5 fields
+   */
   availability_commitment?: AvailabilityCommitmentAmino;
   chunk_proofs: ChunkProofAmino[];
+  /**
+   * LEP-6 canonical artifact counts committed at finalization.
+   * These values anchor deterministic artifact ordinal selection on-chain.
+   */
+  index_artifact_count: number;
+  symbol_artifact_count: number;
 }
 export interface CascadeMetadataAminoMsg {
   type: "/lumera.action.v1.CascadeMetadata";
@@ -550,6 +475,291 @@ export const SenseMetadata = {
   },
   registerTypeUrl() {}
 };
+function createBaseAvailabilityCommitment(): AvailabilityCommitment {
+  return {
+    commitmentType: "",
+    hashAlgo: 0,
+    chunkSize: 0,
+    totalSize: BigInt(0),
+    numChunks: 0,
+    root: new Uint8Array(),
+    challengeIndices: []
+  };
+}
+/**
+ * AvailabilityCommitment is the LEP-5 on-chain file commitment included
+ * during Cascade registration.
+ * @name AvailabilityCommitment
+ * @package lumera.action.v1
+ * @see proto type: lumera.action.v1.AvailabilityCommitment
+ */
+export const AvailabilityCommitment = {
+  typeUrl: "/lumera.action.v1.AvailabilityCommitment",
+  is(o: any): o is AvailabilityCommitment {
+    return o && (o.$typeUrl === AvailabilityCommitment.typeUrl || typeof o.commitmentType === "string" && isSet(o.hashAlgo) && typeof o.chunkSize === "number" && typeof o.totalSize === "bigint" && typeof o.numChunks === "number" && (o.root instanceof Uint8Array || typeof o.root === "string") && Array.isArray(o.challengeIndices) && (!o.challengeIndices.length || typeof o.challengeIndices[0] === "number"));
+  },
+  isAmino(o: any): o is AvailabilityCommitmentAmino {
+    return o && (o.$typeUrl === AvailabilityCommitment.typeUrl || typeof o.commitment_type === "string" && isSet(o.hash_algo) && typeof o.chunk_size === "number" && typeof o.total_size === "bigint" && typeof o.num_chunks === "number" && (o.root instanceof Uint8Array || typeof o.root === "string") && Array.isArray(o.challenge_indices) && (!o.challenge_indices.length || typeof o.challenge_indices[0] === "number"));
+  },
+  encode(message: AvailabilityCommitment, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.commitmentType !== "") {
+      writer.uint32(10).string(message.commitmentType);
+    }
+    if (message.hashAlgo !== 0) {
+      writer.uint32(16).int32(message.hashAlgo);
+    }
+    if (message.chunkSize !== 0) {
+      writer.uint32(24).uint32(message.chunkSize);
+    }
+    if (message.totalSize !== BigInt(0)) {
+      writer.uint32(32).uint64(message.totalSize);
+    }
+    if (message.numChunks !== 0) {
+      writer.uint32(40).uint32(message.numChunks);
+    }
+    if (message.root.length !== 0) {
+      writer.uint32(50).bytes(message.root);
+    }
+    writer.uint32(58).fork();
+    for (const v of message.challengeIndices) {
+      writer.uint32(v);
+    }
+    writer.ldelim();
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): AvailabilityCommitment {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAvailabilityCommitment();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.commitmentType = reader.string();
+          break;
+        case 2:
+          message.hashAlgo = reader.int32() as any;
+          break;
+        case 3:
+          message.chunkSize = reader.uint32();
+          break;
+        case 4:
+          message.totalSize = reader.uint64();
+          break;
+        case 5:
+          message.numChunks = reader.uint32();
+          break;
+        case 6:
+          message.root = reader.bytes();
+          break;
+        case 7:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.challengeIndices.push(reader.uint32());
+            }
+          } else {
+            message.challengeIndices.push(reader.uint32());
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<AvailabilityCommitment>): AvailabilityCommitment {
+    const message = createBaseAvailabilityCommitment();
+    message.commitmentType = object.commitmentType ?? "";
+    message.hashAlgo = object.hashAlgo ?? 0;
+    message.chunkSize = object.chunkSize ?? 0;
+    message.totalSize = object.totalSize !== undefined && object.totalSize !== null ? BigInt(object.totalSize.toString()) : BigInt(0);
+    message.numChunks = object.numChunks ?? 0;
+    message.root = object.root ?? new Uint8Array();
+    message.challengeIndices = object.challengeIndices?.map(e => e) || [];
+    return message;
+  },
+  fromAmino(object: AvailabilityCommitmentAmino): AvailabilityCommitment {
+    const message = createBaseAvailabilityCommitment();
+    if (object.commitment_type !== undefined && object.commitment_type !== null) {
+      message.commitmentType = object.commitment_type;
+    }
+    if (object.hash_algo !== undefined && object.hash_algo !== null) {
+      message.hashAlgo = object.hash_algo;
+    }
+    if (object.chunk_size !== undefined && object.chunk_size !== null) {
+      message.chunkSize = object.chunk_size;
+    }
+    if (object.total_size !== undefined && object.total_size !== null) {
+      message.totalSize = BigInt(object.total_size);
+    }
+    if (object.num_chunks !== undefined && object.num_chunks !== null) {
+      message.numChunks = object.num_chunks;
+    }
+    if (object.root !== undefined && object.root !== null) {
+      message.root = bytesFromBase64(object.root);
+    }
+    message.challengeIndices = object.challenge_indices?.map(e => e) || [];
+    return message;
+  },
+  toAmino(message: AvailabilityCommitment): AvailabilityCommitmentAmino {
+    const obj: any = {};
+    obj.commitment_type = message.commitmentType === "" ? undefined : message.commitmentType;
+    obj.hash_algo = message.hashAlgo === 0 ? undefined : message.hashAlgo;
+    obj.chunk_size = message.chunkSize === 0 ? undefined : message.chunkSize;
+    obj.total_size = message.totalSize !== BigInt(0) ? message.totalSize?.toString() : undefined;
+    obj.num_chunks = message.numChunks === 0 ? undefined : message.numChunks;
+    obj.root = message.root ? base64FromBytes(message.root) : undefined;
+    if (message.challengeIndices) {
+      obj.challenge_indices = message.challengeIndices.map(e => e);
+    } else {
+      obj.challenge_indices = message.challengeIndices;
+    }
+    return obj;
+  },
+  fromAminoMsg(object: AvailabilityCommitmentAminoMsg): AvailabilityCommitment {
+    return AvailabilityCommitment.fromAmino(object.value);
+  },
+  fromProtoMsg(message: AvailabilityCommitmentProtoMsg): AvailabilityCommitment {
+    return AvailabilityCommitment.decode(message.value);
+  },
+  toProto(message: AvailabilityCommitment): Uint8Array {
+    return AvailabilityCommitment.encode(message).finish();
+  },
+  toProtoMsg(message: AvailabilityCommitment): AvailabilityCommitmentProtoMsg {
+    return {
+      typeUrl: "/lumera.action.v1.AvailabilityCommitment",
+      value: AvailabilityCommitment.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {}
+};
+function createBaseChunkProof(): ChunkProof {
+  return {
+    chunkIndex: 0,
+    leafHash: new Uint8Array(),
+    pathHashes: [],
+    pathDirections: []
+  };
+}
+/**
+ * ChunkProof is a Merkle inclusion proof for one challenged chunk.
+ * @name ChunkProof
+ * @package lumera.action.v1
+ * @see proto type: lumera.action.v1.ChunkProof
+ */
+export const ChunkProof = {
+  typeUrl: "/lumera.action.v1.ChunkProof",
+  is(o: any): o is ChunkProof {
+    return o && (o.$typeUrl === ChunkProof.typeUrl || typeof o.chunkIndex === "number" && (o.leafHash instanceof Uint8Array || typeof o.leafHash === "string") && Array.isArray(o.pathHashes) && (!o.pathHashes.length || o.pathHashes[0] instanceof Uint8Array || typeof o.pathHashes[0] === "string") && Array.isArray(o.pathDirections) && (!o.pathDirections.length || typeof o.pathDirections[0] === "boolean"));
+  },
+  isAmino(o: any): o is ChunkProofAmino {
+    return o && (o.$typeUrl === ChunkProof.typeUrl || typeof o.chunk_index === "number" && (o.leaf_hash instanceof Uint8Array || typeof o.leaf_hash === "string") && Array.isArray(o.path_hashes) && (!o.path_hashes.length || o.path_hashes[0] instanceof Uint8Array || typeof o.path_hashes[0] === "string") && Array.isArray(o.path_directions) && (!o.path_directions.length || typeof o.path_directions[0] === "boolean"));
+  },
+  encode(message: ChunkProof, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.chunkIndex !== 0) {
+      writer.uint32(8).uint32(message.chunkIndex);
+    }
+    if (message.leafHash.length !== 0) {
+      writer.uint32(18).bytes(message.leafHash);
+    }
+    for (const v of message.pathHashes) {
+      writer.uint32(26).bytes(v!);
+    }
+    writer.uint32(34).fork();
+    for (const v of message.pathDirections) {
+      writer.bool(v);
+    }
+    writer.ldelim();
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): ChunkProof {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseChunkProof();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.chunkIndex = reader.uint32();
+          break;
+        case 2:
+          message.leafHash = reader.bytes();
+          break;
+        case 3:
+          message.pathHashes.push(reader.bytes());
+          break;
+        case 4:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.pathDirections.push(reader.bool());
+            }
+          } else {
+            message.pathDirections.push(reader.bool());
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<ChunkProof>): ChunkProof {
+    const message = createBaseChunkProof();
+    message.chunkIndex = object.chunkIndex ?? 0;
+    message.leafHash = object.leafHash ?? new Uint8Array();
+    message.pathHashes = object.pathHashes?.map(e => e) || [];
+    message.pathDirections = object.pathDirections?.map(e => e) || [];
+    return message;
+  },
+  fromAmino(object: ChunkProofAmino): ChunkProof {
+    const message = createBaseChunkProof();
+    if (object.chunk_index !== undefined && object.chunk_index !== null) {
+      message.chunkIndex = object.chunk_index;
+    }
+    if (object.leaf_hash !== undefined && object.leaf_hash !== null) {
+      message.leafHash = bytesFromBase64(object.leaf_hash);
+    }
+    message.pathHashes = object.path_hashes?.map(e => bytesFromBase64(e)) || [];
+    message.pathDirections = object.path_directions?.map(e => e) || [];
+    return message;
+  },
+  toAmino(message: ChunkProof): ChunkProofAmino {
+    const obj: any = {};
+    obj.chunk_index = message.chunkIndex === 0 ? undefined : message.chunkIndex;
+    obj.leaf_hash = message.leafHash ? base64FromBytes(message.leafHash) : undefined;
+    if (message.pathHashes) {
+      obj.path_hashes = message.pathHashes.map(e => base64FromBytes(e));
+    } else {
+      obj.path_hashes = message.pathHashes;
+    }
+    if (message.pathDirections) {
+      obj.path_directions = message.pathDirections.map(e => e);
+    } else {
+      obj.path_directions = message.pathDirections;
+    }
+    return obj;
+  },
+  fromAminoMsg(object: ChunkProofAminoMsg): ChunkProof {
+    return ChunkProof.fromAmino(object.value);
+  },
+  fromProtoMsg(message: ChunkProofProtoMsg): ChunkProof {
+    return ChunkProof.decode(message.value);
+  },
+  toProto(message: ChunkProof): Uint8Array {
+    return ChunkProof.encode(message).finish();
+  },
+  toProtoMsg(message: ChunkProof): ChunkProofProtoMsg {
+    return {
+      typeUrl: "/lumera.action.v1.ChunkProof",
+      value: ChunkProof.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {}
+};
 function createBaseCascadeMetadata(): CascadeMetadata {
   return {
     dataHash: "",
@@ -560,7 +770,9 @@ function createBaseCascadeMetadata(): CascadeMetadata {
     signatures: "",
     public: false,
     availabilityCommitment: undefined,
-    chunkProofs: []
+    chunkProofs: [],
+    indexArtifactCount: 0,
+    symbolArtifactCount: 0
   };
 }
 /**
@@ -579,10 +791,10 @@ function createBaseCascadeMetadata(): CascadeMetadata {
 export const CascadeMetadata = {
   typeUrl: "/lumera.action.v1.CascadeMetadata",
   is(o: any): o is CascadeMetadata {
-    return o && (o.$typeUrl === CascadeMetadata.typeUrl || typeof o.dataHash === "string" && typeof o.fileName === "string" && typeof o.rqIdsIc === "bigint" && typeof o.rqIdsMax === "bigint" && typeof o.signatures === "string" && typeof o.public === "boolean");
+    return o && (o.$typeUrl === CascadeMetadata.typeUrl || typeof o.dataHash === "string" && typeof o.fileName === "string" && typeof o.rqIdsIc === "bigint" && typeof o.rqIdsMax === "bigint" && typeof o.signatures === "string" && typeof o.public === "boolean" && Array.isArray(o.chunkProofs) && (!o.chunkProofs.length || ChunkProof.is(o.chunkProofs[0])) && typeof o.indexArtifactCount === "number" && typeof o.symbolArtifactCount === "number");
   },
   isAmino(o: any): o is CascadeMetadataAmino {
-    return o && (o.$typeUrl === CascadeMetadata.typeUrl || typeof o.data_hash === "string" && typeof o.file_name === "string" && typeof o.rq_ids_ic === "bigint" && typeof o.rq_ids_max === "bigint" && typeof o.signatures === "string" && typeof o.public === "boolean");
+    return o && (o.$typeUrl === CascadeMetadata.typeUrl || typeof o.data_hash === "string" && typeof o.file_name === "string" && typeof o.rq_ids_ic === "bigint" && typeof o.rq_ids_max === "bigint" && typeof o.signatures === "string" && typeof o.public === "boolean" && Array.isArray(o.chunk_proofs) && (!o.chunk_proofs.length || ChunkProof.isAmino(o.chunk_proofs[0])) && typeof o.index_artifact_count === "number" && typeof o.symbol_artifact_count === "number");
   },
   encode(message: CascadeMetadata, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.dataHash !== "") {
@@ -611,6 +823,12 @@ export const CascadeMetadata = {
     }
     for (const v of message.chunkProofs) {
       ChunkProof.encode(v!, writer.uint32(74).fork()).ldelim();
+    }
+    if (message.indexArtifactCount !== 0) {
+      writer.uint32(80).uint32(message.indexArtifactCount);
+    }
+    if (message.symbolArtifactCount !== 0) {
+      writer.uint32(88).uint32(message.symbolArtifactCount);
     }
     return writer;
   },
@@ -648,6 +866,12 @@ export const CascadeMetadata = {
         case 9:
           message.chunkProofs.push(ChunkProof.decode(reader, reader.uint32()));
           break;
+        case 10:
+          message.indexArtifactCount = reader.uint32();
+          break;
+        case 11:
+          message.symbolArtifactCount = reader.uint32();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -666,6 +890,8 @@ export const CascadeMetadata = {
     message.public = object.public ?? false;
     message.availabilityCommitment = object.availabilityCommitment !== undefined && object.availabilityCommitment !== null ? AvailabilityCommitment.fromPartial(object.availabilityCommitment) : undefined;
     message.chunkProofs = object.chunkProofs?.map(e => ChunkProof.fromPartial(e)) || [];
+    message.indexArtifactCount = object.indexArtifactCount ?? 0;
+    message.symbolArtifactCount = object.symbolArtifactCount ?? 0;
     return message;
   },
   fromAmino(object: CascadeMetadataAmino): CascadeMetadata {
@@ -690,9 +916,15 @@ export const CascadeMetadata = {
       message.public = object.public;
     }
     if (object.availability_commitment !== undefined && object.availability_commitment !== null) {
-      message.availabilityCommitment = AvailabilityCommitment.fromPartial(object.availability_commitment as any);
+      message.availabilityCommitment = AvailabilityCommitment.fromAmino(object.availability_commitment);
     }
-    message.chunkProofs = object.chunk_proofs?.map(e => ChunkProof.fromPartial(e as any)) || [];
+    message.chunkProofs = object.chunk_proofs?.map(e => ChunkProof.fromAmino(e)) || [];
+    if (object.index_artifact_count !== undefined && object.index_artifact_count !== null) {
+      message.indexArtifactCount = object.index_artifact_count;
+    }
+    if (object.symbol_artifact_count !== undefined && object.symbol_artifact_count !== null) {
+      message.symbolArtifactCount = object.symbol_artifact_count;
+    }
     return message;
   },
   toAmino(message: CascadeMetadata): CascadeMetadataAmino {
@@ -708,25 +940,14 @@ export const CascadeMetadata = {
     }
     obj.signatures = message.signatures === "" ? undefined : message.signatures;
     obj.public = message.public === false ? undefined : message.public;
-    obj.availability_commitment = message.availabilityCommitment ? {
-      commitment_type: message.availabilityCommitment.commitmentType,
-      hash_algo: message.availabilityCommitment.hashAlgo,
-      chunk_size: message.availabilityCommitment.chunkSize,
-      total_size: message.availabilityCommitment.totalSize.toString(),
-      num_chunks: message.availabilityCommitment.numChunks,
-      root: message.availabilityCommitment.root,
-      challenge_indices: message.availabilityCommitment.challengeIndices,
-    } : undefined;
+    obj.availability_commitment = message.availabilityCommitment ? AvailabilityCommitment.toAmino(message.availabilityCommitment) : undefined;
     if (message.chunkProofs) {
-      obj.chunk_proofs = message.chunkProofs.map(e => ({
-        chunk_index: e.chunkIndex,
-        leaf_hash: e.leafHash,
-        path_hashes: e.pathHashes,
-        path_directions: e.pathDirections,
-      }));
+      obj.chunk_proofs = message.chunkProofs.map(e => e ? ChunkProof.toAmino(e) : undefined);
     } else {
-      obj.chunk_proofs = [];
+      obj.chunk_proofs = message.chunkProofs;
     }
+    obj.index_artifact_count = message.indexArtifactCount === 0 ? undefined : message.indexArtifactCount;
+    obj.symbol_artifact_count = message.symbolArtifactCount === 0 ? undefined : message.symbolArtifactCount;
     return obj;
   },
   fromAminoMsg(object: CascadeMetadataAminoMsg): CascadeMetadata {
@@ -744,5 +965,11 @@ export const CascadeMetadata = {
       value: CascadeMetadata.encode(message).finish()
     };
   },
-  registerTypeUrl() {}
+  registerTypeUrl() {
+    if (!GlobalDecoderRegistry.registerExistingTypeUrl(CascadeMetadata.typeUrl)) {
+      return;
+    }
+    AvailabilityCommitment.registerTypeUrl();
+    ChunkProof.registerTypeUrl();
+  }
 };

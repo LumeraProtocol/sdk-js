@@ -2,8 +2,84 @@
 /* eslint-disable */
 import { Coin, CoinAmino } from "../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../binary";
-import { GlobalDecoderRegistry } from "../../../registry";
 import { DeepPartial } from "../../../helpers";
+import { GlobalDecoderRegistry } from "../../../registry";
+/**
+ * RewardDistribution governs the Everlight reward pool's payout cadence,
+ * eligibility floor, ramp-up, smoothing window and growth cap. All fields
+ * are governance-mutable via supernode MsgUpdateParams.
+ * @name RewardDistribution
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.RewardDistribution
+ */
+export interface RewardDistribution {
+  /**
+   * Distribution period in blocks. Pool balance distributed every this many blocks.
+   */
+  paymentPeriodBlocks: bigint;
+  /**
+   * Share of action registration fees routed to Everlight pool, in basis points.
+   */
+  registrationFeeShareBps: bigint;
+  /**
+   * Minimum cascade_kademlia_db_bytes for a SuperNode to qualify for payouts.
+   */
+  minCascadeBytesForPayment: bigint;
+  /**
+   * Number of payment periods for new SuperNode payout ramp-up.
+   */
+  newSnRampUpPeriods: bigint;
+  /**
+   * Rolling average window (in payment periods) for weight smoothing.
+   */
+  measurementSmoothingPeriods: bigint;
+  /**
+   * Maximum rate of reported cascade bytes increase per period, in basis points.
+   */
+  usageGrowthCapBpsPerPeriod: bigint;
+}
+export interface RewardDistributionProtoMsg {
+  typeUrl: "/lumera.supernode.v1.RewardDistribution";
+  value: Uint8Array;
+}
+/**
+ * RewardDistribution governs the Everlight reward pool's payout cadence,
+ * eligibility floor, ramp-up, smoothing window and growth cap. All fields
+ * are governance-mutable via supernode MsgUpdateParams.
+ * @name RewardDistributionAmino
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.RewardDistribution
+ */
+export interface RewardDistributionAmino {
+  /**
+   * Distribution period in blocks. Pool balance distributed every this many blocks.
+   */
+  payment_period_blocks: string;
+  /**
+   * Share of action registration fees routed to Everlight pool, in basis points.
+   */
+  registration_fee_share_bps: string;
+  /**
+   * Minimum cascade_kademlia_db_bytes for a SuperNode to qualify for payouts.
+   */
+  min_cascade_bytes_for_payment: string;
+  /**
+   * Number of payment periods for new SuperNode payout ramp-up.
+   */
+  new_sn_ramp_up_periods: string;
+  /**
+   * Rolling average window (in payment periods) for weight smoothing.
+   */
+  measurement_smoothing_periods: string;
+  /**
+   * Maximum rate of reported cascade bytes increase per period, in basis points.
+   */
+  usage_growth_cap_bps_per_period: string;
+}
+export interface RewardDistributionAminoMsg {
+  type: "/lumera.supernode.v1.RewardDistribution";
+  value: RewardDistributionAmino;
+}
 /**
  * Params defines the parameters for the module.
  * @name Params
@@ -41,6 +117,7 @@ export interface Params {
   minStorageGb: bigint;
   maxStorageUsagePercent: bigint;
   requiredOpenPorts: number[];
+  rewardDistribution?: RewardDistribution;
 }
 export interface ParamsProtoMsg {
   typeUrl: "/lumera.supernode.v1.Params";
@@ -83,11 +160,150 @@ export interface ParamsAmino {
   min_storage_gb: string;
   max_storage_usage_percent: string;
   required_open_ports: number[];
+  reward_distribution?: RewardDistributionAmino;
 }
 export interface ParamsAminoMsg {
   type: "lumera/x/supernode/v1/Params";
   value: ParamsAmino;
 }
+function createBaseRewardDistribution(): RewardDistribution {
+  return {
+    paymentPeriodBlocks: BigInt(0),
+    registrationFeeShareBps: BigInt(0),
+    minCascadeBytesForPayment: BigInt(0),
+    newSnRampUpPeriods: BigInt(0),
+    measurementSmoothingPeriods: BigInt(0),
+    usageGrowthCapBpsPerPeriod: BigInt(0)
+  };
+}
+/**
+ * RewardDistribution governs the Everlight reward pool's payout cadence,
+ * eligibility floor, ramp-up, smoothing window and growth cap. All fields
+ * are governance-mutable via supernode MsgUpdateParams.
+ * @name RewardDistribution
+ * @package lumera.supernode.v1
+ * @see proto type: lumera.supernode.v1.RewardDistribution
+ */
+export const RewardDistribution = {
+  typeUrl: "/lumera.supernode.v1.RewardDistribution",
+  is(o: any): o is RewardDistribution {
+    return o && (o.$typeUrl === RewardDistribution.typeUrl || typeof o.paymentPeriodBlocks === "bigint" && typeof o.registrationFeeShareBps === "bigint" && typeof o.minCascadeBytesForPayment === "bigint" && typeof o.newSnRampUpPeriods === "bigint" && typeof o.measurementSmoothingPeriods === "bigint" && typeof o.usageGrowthCapBpsPerPeriod === "bigint");
+  },
+  isAmino(o: any): o is RewardDistributionAmino {
+    return o && (o.$typeUrl === RewardDistribution.typeUrl || typeof o.payment_period_blocks === "bigint" && typeof o.registration_fee_share_bps === "bigint" && typeof o.min_cascade_bytes_for_payment === "bigint" && typeof o.new_sn_ramp_up_periods === "bigint" && typeof o.measurement_smoothing_periods === "bigint" && typeof o.usage_growth_cap_bps_per_period === "bigint");
+  },
+  encode(message: RewardDistribution, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.paymentPeriodBlocks !== BigInt(0)) {
+      writer.uint32(8).uint64(message.paymentPeriodBlocks);
+    }
+    if (message.registrationFeeShareBps !== BigInt(0)) {
+      writer.uint32(16).uint64(message.registrationFeeShareBps);
+    }
+    if (message.minCascadeBytesForPayment !== BigInt(0)) {
+      writer.uint32(24).uint64(message.minCascadeBytesForPayment);
+    }
+    if (message.newSnRampUpPeriods !== BigInt(0)) {
+      writer.uint32(32).uint64(message.newSnRampUpPeriods);
+    }
+    if (message.measurementSmoothingPeriods !== BigInt(0)) {
+      writer.uint32(40).uint64(message.measurementSmoothingPeriods);
+    }
+    if (message.usageGrowthCapBpsPerPeriod !== BigInt(0)) {
+      writer.uint32(48).uint64(message.usageGrowthCapBpsPerPeriod);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): RewardDistribution {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRewardDistribution();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.paymentPeriodBlocks = reader.uint64();
+          break;
+        case 2:
+          message.registrationFeeShareBps = reader.uint64();
+          break;
+        case 3:
+          message.minCascadeBytesForPayment = reader.uint64();
+          break;
+        case 4:
+          message.newSnRampUpPeriods = reader.uint64();
+          break;
+        case 5:
+          message.measurementSmoothingPeriods = reader.uint64();
+          break;
+        case 6:
+          message.usageGrowthCapBpsPerPeriod = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<RewardDistribution>): RewardDistribution {
+    const message = createBaseRewardDistribution();
+    message.paymentPeriodBlocks = object.paymentPeriodBlocks !== undefined && object.paymentPeriodBlocks !== null ? BigInt(object.paymentPeriodBlocks.toString()) : BigInt(0);
+    message.registrationFeeShareBps = object.registrationFeeShareBps !== undefined && object.registrationFeeShareBps !== null ? BigInt(object.registrationFeeShareBps.toString()) : BigInt(0);
+    message.minCascadeBytesForPayment = object.minCascadeBytesForPayment !== undefined && object.minCascadeBytesForPayment !== null ? BigInt(object.minCascadeBytesForPayment.toString()) : BigInt(0);
+    message.newSnRampUpPeriods = object.newSnRampUpPeriods !== undefined && object.newSnRampUpPeriods !== null ? BigInt(object.newSnRampUpPeriods.toString()) : BigInt(0);
+    message.measurementSmoothingPeriods = object.measurementSmoothingPeriods !== undefined && object.measurementSmoothingPeriods !== null ? BigInt(object.measurementSmoothingPeriods.toString()) : BigInt(0);
+    message.usageGrowthCapBpsPerPeriod = object.usageGrowthCapBpsPerPeriod !== undefined && object.usageGrowthCapBpsPerPeriod !== null ? BigInt(object.usageGrowthCapBpsPerPeriod.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: RewardDistributionAmino): RewardDistribution {
+    const message = createBaseRewardDistribution();
+    if (object.payment_period_blocks !== undefined && object.payment_period_blocks !== null) {
+      message.paymentPeriodBlocks = BigInt(object.payment_period_blocks);
+    }
+    if (object.registration_fee_share_bps !== undefined && object.registration_fee_share_bps !== null) {
+      message.registrationFeeShareBps = BigInt(object.registration_fee_share_bps);
+    }
+    if (object.min_cascade_bytes_for_payment !== undefined && object.min_cascade_bytes_for_payment !== null) {
+      message.minCascadeBytesForPayment = BigInt(object.min_cascade_bytes_for_payment);
+    }
+    if (object.new_sn_ramp_up_periods !== undefined && object.new_sn_ramp_up_periods !== null) {
+      message.newSnRampUpPeriods = BigInt(object.new_sn_ramp_up_periods);
+    }
+    if (object.measurement_smoothing_periods !== undefined && object.measurement_smoothing_periods !== null) {
+      message.measurementSmoothingPeriods = BigInt(object.measurement_smoothing_periods);
+    }
+    if (object.usage_growth_cap_bps_per_period !== undefined && object.usage_growth_cap_bps_per_period !== null) {
+      message.usageGrowthCapBpsPerPeriod = BigInt(object.usage_growth_cap_bps_per_period);
+    }
+    return message;
+  },
+  toAmino(message: RewardDistribution): RewardDistributionAmino {
+    const obj: any = {};
+    obj.payment_period_blocks = message.paymentPeriodBlocks !== BigInt(0) ? message.paymentPeriodBlocks?.toString() : undefined;
+    obj.registration_fee_share_bps = message.registrationFeeShareBps !== BigInt(0) ? message.registrationFeeShareBps?.toString() : undefined;
+    obj.min_cascade_bytes_for_payment = message.minCascadeBytesForPayment !== BigInt(0) ? message.minCascadeBytesForPayment?.toString() : undefined;
+    obj.new_sn_ramp_up_periods = message.newSnRampUpPeriods !== BigInt(0) ? message.newSnRampUpPeriods?.toString() : undefined;
+    obj.measurement_smoothing_periods = message.measurementSmoothingPeriods !== BigInt(0) ? message.measurementSmoothingPeriods?.toString() : undefined;
+    obj.usage_growth_cap_bps_per_period = message.usageGrowthCapBpsPerPeriod !== BigInt(0) ? message.usageGrowthCapBpsPerPeriod?.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: RewardDistributionAminoMsg): RewardDistribution {
+    return RewardDistribution.fromAmino(object.value);
+  },
+  fromProtoMsg(message: RewardDistributionProtoMsg): RewardDistribution {
+    return RewardDistribution.decode(message.value);
+  },
+  toProto(message: RewardDistribution): Uint8Array {
+    return RewardDistribution.encode(message).finish();
+  },
+  toProtoMsg(message: RewardDistribution): RewardDistributionProtoMsg {
+    return {
+      typeUrl: "/lumera.supernode.v1.RewardDistribution",
+      value: RewardDistribution.encode(message).finish()
+    };
+  },
+  registerTypeUrl() {}
+};
 function createBaseParams(): Params {
   return {
     minimumStakeForSn: Coin.fromPartial({}),
@@ -107,7 +323,8 @@ function createBaseParams(): Params {
     maxMemUsagePercent: BigInt(0),
     minStorageGb: BigInt(0),
     maxStorageUsagePercent: BigInt(0),
-    requiredOpenPorts: []
+    requiredOpenPorts: [],
+    rewardDistribution: undefined
   };
 }
 /**
@@ -182,6 +399,9 @@ export const Params = {
       writer.uint32(v);
     }
     writer.ldelim();
+    if (message.rewardDistribution !== undefined) {
+      RewardDistribution.encode(message.rewardDistribution, writer.uint32(154).fork()).ldelim();
+    }
     return writer;
   },
   decode(input: BinaryReader | Uint8Array, length?: number): Params {
@@ -252,6 +472,9 @@ export const Params = {
             message.requiredOpenPorts.push(reader.uint32());
           }
           break;
+        case 19:
+          message.rewardDistribution = RewardDistribution.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -279,6 +502,7 @@ export const Params = {
     message.minStorageGb = object.minStorageGb !== undefined && object.minStorageGb !== null ? BigInt(object.minStorageGb.toString()) : BigInt(0);
     message.maxStorageUsagePercent = object.maxStorageUsagePercent !== undefined && object.maxStorageUsagePercent !== null ? BigInt(object.maxStorageUsagePercent.toString()) : BigInt(0);
     message.requiredOpenPorts = object.requiredOpenPorts?.map(e => e) || [];
+    message.rewardDistribution = object.rewardDistribution !== undefined && object.rewardDistribution !== null ? RewardDistribution.fromPartial(object.rewardDistribution) : undefined;
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
@@ -335,6 +559,9 @@ export const Params = {
       message.maxStorageUsagePercent = BigInt(object.max_storage_usage_percent);
     }
     message.requiredOpenPorts = object.required_open_ports?.map(e => e) || [];
+    if (object.reward_distribution !== undefined && object.reward_distribution !== null) {
+      message.rewardDistribution = RewardDistribution.fromAmino(object.reward_distribution);
+    }
     return message;
   },
   toAmino(message: Params): ParamsAmino {
@@ -361,6 +588,7 @@ export const Params = {
     } else {
       obj.required_open_ports = message.requiredOpenPorts;
     }
+    obj.reward_distribution = message.rewardDistribution ? RewardDistribution.toAmino(message.rewardDistribution) : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {
@@ -389,5 +617,6 @@ export const Params = {
       return;
     }
     Coin.registerTypeUrl();
+    RewardDistribution.registerTypeUrl();
   }
 };

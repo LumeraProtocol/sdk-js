@@ -36,11 +36,11 @@ export interface Params {
   superNodeFeeShare: string;
   foundationFeeShare: string;
   /**
-   * LEP-5: Number of chunks to challenge during SVC (default: 8)
+   * LEP-5: Storage Verification Challenge parameters
    */
   svcChallengeCount: number;
   /**
-   * LEP-5: Minimum chunks required for SVC (default: 4)
+   * Minimum chunks required for SVC (default: 4)
    */
   svcMinChunksForChallenge: number;
 }
@@ -78,7 +78,13 @@ export interface ParamsAmino {
    */
   super_node_fee_share: string;
   foundation_fee_share: string;
+  /**
+   * LEP-5: Storage Verification Challenge parameters
+   */
   svc_challenge_count: number;
+  /**
+   * Minimum chunks required for SVC (default: 4)
+   */
   svc_min_chunks_for_challenge: number;
 }
 export interface ParamsAminoMsg {
@@ -111,10 +117,10 @@ function createBaseParams(): Params {
 export const Params = {
   typeUrl: "/lumera.action.v1.Params",
   is(o: any): o is Params {
-    return o && (o.$typeUrl === Params.typeUrl || Coin.is(o.baseActionFee) && Coin.is(o.feePerKbyte) && typeof o.maxActionsPerBlock === "bigint" && typeof o.minSuperNodes === "bigint" && typeof o.maxDdAndFingerprints === "bigint" && typeof o.maxRaptorQSymbols === "bigint" && Duration.is(o.expirationDuration) && Duration.is(o.minProcessingTime) && Duration.is(o.maxProcessingTime) && typeof o.superNodeFeeShare === "string" && typeof o.foundationFeeShare === "string");
+    return o && (o.$typeUrl === Params.typeUrl || Coin.is(o.baseActionFee) && Coin.is(o.feePerKbyte) && typeof o.maxActionsPerBlock === "bigint" && typeof o.minSuperNodes === "bigint" && typeof o.maxDdAndFingerprints === "bigint" && typeof o.maxRaptorQSymbols === "bigint" && Duration.is(o.expirationDuration) && Duration.is(o.minProcessingTime) && Duration.is(o.maxProcessingTime) && typeof o.superNodeFeeShare === "string" && typeof o.foundationFeeShare === "string" && typeof o.svcChallengeCount === "number" && typeof o.svcMinChunksForChallenge === "number");
   },
   isAmino(o: any): o is ParamsAmino {
-    return o && (o.$typeUrl === Params.typeUrl || Coin.isAmino(o.base_action_fee) && Coin.isAmino(o.fee_per_kbyte) && typeof o.max_actions_per_block === "bigint" && typeof o.min_super_nodes === "bigint" && typeof o.max_dd_and_fingerprints === "bigint" && typeof o.max_raptor_q_symbols === "bigint" && Duration.isAmino(o.expiration_duration) && Duration.isAmino(o.min_processing_time) && Duration.isAmino(o.max_processing_time) && typeof o.super_node_fee_share === "string" && typeof o.foundation_fee_share === "string");
+    return o && (o.$typeUrl === Params.typeUrl || Coin.isAmino(o.base_action_fee) && Coin.isAmino(o.fee_per_kbyte) && typeof o.max_actions_per_block === "bigint" && typeof o.min_super_nodes === "bigint" && typeof o.max_dd_and_fingerprints === "bigint" && typeof o.max_raptor_q_symbols === "bigint" && Duration.isAmino(o.expiration_duration) && Duration.isAmino(o.min_processing_time) && Duration.isAmino(o.max_processing_time) && typeof o.super_node_fee_share === "string" && typeof o.foundation_fee_share === "string" && typeof o.svc_challenge_count === "number" && typeof o.svc_min_chunks_for_challenge === "number");
   },
   encode(message: Params, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.baseActionFee !== undefined) {

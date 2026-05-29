@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* eslint-disable */
-import * as _86 from "./gogo";
+import * as _130 from "./gogo";
 export const gogoproto = {
-  ..._86
+  ..._130
 };
