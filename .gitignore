@@ -174,3 +174,4 @@ coverage/
 # Vitest
 coverage.data
 coverage/
+package-lock.json
