@@ -35,3 +35,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: CJS smoke test
+        run: pnpm smoke:cjs
