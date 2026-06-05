@@ -36,5 +36,5 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: CJS smoke test
-        run: pnpm smoke:cjs
+      - name: Smoke tests (CJS + ESM in Node)
+        run: pnpm smoke
