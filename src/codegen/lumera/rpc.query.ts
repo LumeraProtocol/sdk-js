@@ -91,6 +91,7 @@ export const createRPCQueryClient = async ({
         v1: (await import("./audit/v1/query.rpc.Query")).createRpcQueryExtension(client)
       },
       claim: (await import("./claim/query.rpc.Query")).createRpcQueryExtension(client),
+      evmigration: (await import("./evmigration/query.rpc.Query")).createRpcQueryExtension(client),
       lumeraid: (await import("./lumeraid/query.rpc.Query")).createRpcQueryExtension(client),
       supernode: {
         v1: (await import("./supernode/v1/query.rpc.Query")).createRpcQueryExtension(client)

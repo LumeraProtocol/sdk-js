@@ -358,7 +358,7 @@ export interface GenesisNodeFailureFactAminoMsg {
 }
 /**
  * GenesisReporterResultFact — st/rrs/ entry (JSON-encoded record).
- * The st/rrs-tt/ secondary index is rebuilt by the existing setter.
+ * Secondary indexes are rebuilt by the existing setter.
  * @name GenesisReporterResultFact
  * @package lumera.audit.v1
  * @see proto type: lumera.audit.v1.GenesisReporterResultFact
@@ -376,7 +376,7 @@ export interface GenesisReporterResultFactProtoMsg {
 }
 /**
  * GenesisReporterResultFact — st/rrs/ entry (JSON-encoded record).
- * The st/rrs-tt/ secondary index is rebuilt by the existing setter.
+ * Secondary indexes are rebuilt by the existing setter.
  * @name GenesisReporterResultFactAmino
  * @package lumera.audit.v1
  * @see proto type: lumera.audit.v1.GenesisReporterResultFact
@@ -1625,7 +1625,7 @@ function createBaseGenesisReporterResultFact(): GenesisReporterResultFact {
 }
 /**
  * GenesisReporterResultFact — st/rrs/ entry (JSON-encoded record).
- * The st/rrs-tt/ secondary index is rebuilt by the existing setter.
+ * Secondary indexes are rebuilt by the existing setter.
  * @name GenesisReporterResultFact
  * @package lumera.audit.v1
  * @see proto type: lumera.audit.v1.GenesisReporterResultFact
