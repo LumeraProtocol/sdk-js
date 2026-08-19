@@ -84,6 +84,9 @@ export async function hashNode(left: Uint8Array, right: Uint8Array): Promise<Uin
 /**
  * Build a Merkle tree from leaf hashes.
  * Returns all levels: tree[0] = leaves, tree[last] = [root].
+ * If a level has an odd number of nodes, the last node is duplicated and the
+ * stored level includes the duplicate, exactly like the on-chain
+ * lumera/x/action/v1/merkle.BuildTree the SuperNodes verify against.
  */
 export async function buildTree(leafHashes: Uint8Array[]): Promise<Uint8Array[][]> {
   if (leafHashes.length === 0) {
@@ -94,14 +97,17 @@ export async function buildTree(leafHashes: Uint8Array[]): Promise<Uint8Array[][
   let current = leafHashes;
 
   while (current.length > 1) {
+    // Odd number of nodes: duplicate the last node so it pairs with itself.
+    // Promoting it unchanged produces a different root than the chain and
+    // makes SuperNodes reject the upload with a merkle root mismatch.
+    if (current.length % 2 !== 0) {
+      current = [...current, current[current.length - 1]];
+      levels[levels.length - 1] = current;
+    }
+
     const next: Uint8Array[] = [];
     for (let i = 0; i < current.length; i += 2) {
-      if (i + 1 < current.length) {
-        next.push(await hashNode(current[i], current[i + 1]));
-      } else {
-        // Odd node: promote to next level
-        next.push(current[i]);
-      }
+      next.push(await hashNode(current[i], current[i + 1]));
     }
     levels.push(next);
     current = next;
