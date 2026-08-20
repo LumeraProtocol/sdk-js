@@ -304,6 +304,32 @@ export class BlockchainActionAdapter implements CascadeChainPort {
     return outcome;
   }
 
+  /** Wait for the finalize transaction to be committed on-chain. */
+  async waitForActionFinalization(
+    actionId: string,
+    options: { timeout?: number; pollInterval?: number } = {}
+  ): Promise<void> {
+    const timeout = options.timeout ?? 300_000;
+    const pollInterval = options.pollInterval ?? 2_000;
+    const deadline = Date.now() + timeout;
+
+    while (Date.now() < deadline) {
+      const action = await this.blockchainClient.Action.getAction(actionId);
+      // ActionState: DONE=3; REJECTED=5; FAILED=6; EXPIRED=7.
+      if (action.state === 3) return;
+      if (action.state === 5 || action.state === 6 || action.state === 7) {
+        throw new Error(
+          `Cascade action ${actionId} reached terminal failure state ${action.state}`
+        );
+      }
+      await new Promise((resolve) => setTimeout(resolve, pollInterval));
+    }
+
+    throw new Error(
+      `Timed out after ${timeout}ms waiting for cascade action ${actionId} to finalize on-chain`
+    );
+  }
+
   /**
    * Invalidate the cached action parameters.
    * 

@@ -183,4 +183,18 @@ export interface CascadeChainPort {
    * ```
    */
   requestActionTx(input: RequestActionTxInput, fileSize: number): Promise<TxOutcome>;
+
+  /**
+   * Wait until an uploaded action reaches on-chain DONE state.
+   *
+   * sn-api's `sdk:completed` event can precede the finalize transaction being
+   * committed. Without this barrier, an immediate download races finalization
+   * and sn-api rejects it while the action is still PENDING.
+   *
+   * Optional to preserve compatibility with custom CascadeChainPort adapters.
+   */
+  waitForActionFinalization?(
+    actionId: string,
+    options?: { timeout?: number; pollInterval?: number }
+  ): Promise<void>;
 }
