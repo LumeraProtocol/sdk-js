@@ -68,6 +68,8 @@ export const createRPCMsgClient = async ({
       v1: new (await import("./audit/v1/tx.rpc.msg")).MsgClientImpl(rpc)
     },
     claim: new (await import("./claim/tx.rpc.msg")).MsgClientImpl(rpc),
+    erc20policy: new (await import("./erc20policy/tx.rpc.msg")).MsgClientImpl(rpc),
+    evmigration: new (await import("./evmigration/tx.rpc.msg")).MsgClientImpl(rpc),
     lumeraid: new (await import("./lumeraid/tx.rpc.msg")).MsgClientImpl(rpc),
     supernode: {
       v1: new (await import("./supernode/v1/tx.rpc.msg")).MsgClientImpl(rpc)
