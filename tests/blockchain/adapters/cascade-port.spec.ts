@@ -59,3 +59,37 @@ describe("BlockchainActionAdapter.requestActionTx", () => {
   });
 });
 
+describe("BlockchainActionAdapter.waitForActionFinalization", () => {
+  it("waits through pending/processing and resolves only at DONE", async () => {
+    const getAction = vi
+      .fn()
+      .mockResolvedValueOnce({ state: 1 })
+      .mockResolvedValueOnce({ state: 2 })
+      .mockResolvedValueOnce({ state: 3 });
+    const adapter = new BlockchainActionAdapter(
+      { Action: { getAction } } as any,
+      "lumera1signer"
+    );
+
+    await adapter.waitForActionFinalization("42", {
+      timeout: 1_000,
+      pollInterval: 1,
+    });
+
+    expect(getAction).toHaveBeenCalledTimes(3);
+    expect(getAction).toHaveBeenLastCalledWith("42");
+  });
+
+  it("rejects terminal failure states", async () => {
+    const getAction = vi.fn().mockResolvedValue({ state: 6 });
+    const adapter = new BlockchainActionAdapter(
+      { Action: { getAction } } as any,
+      "lumera1signer"
+    );
+
+    await expect(adapter.waitForActionFinalization("42")).rejects.toThrow(
+      "terminal failure state 6"
+    );
+  });
+});
+

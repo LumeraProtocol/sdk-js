@@ -17,7 +17,7 @@
  */
 
 import { createLumeraClient } from "../../src/client";
-import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
+import { createProgrammaticSigner } from "../../src/wallets/programmatic";
 import * as crypto from "crypto";
 
 /**
@@ -41,10 +41,9 @@ async function main() {
     );
   }
 
-  // Create a wallet from the mnemonic using the Lumera prefix
-  const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
-    prefix: "lumera",
-  });
+  // Create a UniversalSigner that supports both protobuf transaction signing
+  // and ADR-036 arbitrary signatures required by Cascade upload/download.
+  const wallet = await createProgrammaticSigner(mnemonic);
 
   // Get the first account from the wallet
   const [account] = await wallet.getAccounts();
@@ -123,7 +122,9 @@ This file demonstrates the complete upload/download workflow.`;
     console.log(`  Data hash (BLAKE3, Base64): ${prepared.dataHash}`);
 
     // Calculate expiration time (24 hours from now)
-    const expirationTime = Math.floor(Date.now() / 1000 + 86400).toString();
+    // Chain requires >= 86400s from CURRENT BLOCK TIME, which trails wall clock.
+    // Add a buffer so the value is not marginally short on arrival.
+    const expirationTime = Math.floor(Date.now() / 1000 + 86400 + 600).toString();
 
     // Step 4b: Register action on-chain (generates layout + index and actionId)
     console.log(`  Registering action on-chain...`);

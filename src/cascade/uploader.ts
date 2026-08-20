@@ -294,9 +294,13 @@ export class CascadeUploader {
       const indexFile = buildIndexFile(layoutIds, layoutSignatureB64);
       const indexFileBytes = toCanonicalJsonBytes(indexFile);
       const indexFileB64 = toBase64(indexFileBytes);
-      const indexFileString = new TextDecoder().decode(indexFileBytes);
       console.debug('CascadeUploader.registerAction indexFile', { indexFileB64 });
       
+      // ADR-036 wallets base64-encode string input inside MsgSignData. Signing
+      // raw index JSON therefore produces a signature over `indexFileB64`,
+      // matching the first component of metadata.signatures that the chain
+      // verifies. Do not pass indexFileB64 here: that would double-encode it.
+      const indexFileString = new TextDecoder().decode(indexFileBytes);
       const indexSignatureResponse = await this.requestSignature(
         "index",
         indexFileString,
@@ -496,6 +500,17 @@ export class CascadeUploader {
     
     const completedTask = await taskManager.waitForCompletion();
     console.debug('CascadeUploader.sendFileToSupernodes upload completed', { completedTask });
+
+    // `sdk:completed` means the SuperNode task finished, but its finalize tx may
+    // not be committed yet. Wait for on-chain DONE before resolving so callers
+    // can safely download immediately after uploadFile()/sendFileToSupernodes().
+    if (this.chainPort.waitForActionFinalization) {
+      await this.chainPort.waitForActionFinalization(actionId, {
+        timeout: params.taskOptions?.timeout,
+        pollInterval: params.taskOptions?.pollInterval,
+      });
+      console.debug('CascadeUploader.sendFileToSupernodes action finalized', { actionId });
+    }
     
     return completedTask;
   }

@@ -27,6 +27,11 @@ import { QueryClientImpl as ActionQueryClient } from "../codegen/lumera/action/v
 import { QueryClientImpl as SupernodeQueryClient } from "../codegen/lumera/supernode/v1/query.rpc.Query";
 import { getSigningLumeraClientOptions } from "../codegen/lumera/client";
 import { safeJsonStringify } from "../internal/encoding";
+import { ActionType } from "../codegen/lumera/action/v1/action_type";
+import {
+  CascadeMetadata as CascadeMetadataProto,
+  SenseMetadata as SenseMetadataProto,
+} from "../codegen/lumera/action/v1/metadata";
 
 /**
  * RPC-based Action query client adapter.
@@ -59,8 +64,35 @@ class RpcActionQuery implements ActionQuery {
 
     const action = response.action;
 
-    // Decode the metadata bytes as JSON
-    const decodedMetadata = JSON.parse(new TextDecoder().decode(action.metadata));
+    // Action.metadata is protobuf-encoded bytes, not JSON. Decode according to
+    // action_type; JSON.parse happened to work only against older fixtures and
+    // fails on live v1.20 actions with "Unexpected token ... is not valid JSON".
+    let decodedMetadata: ActionRecord["metadata"];
+    if (action.actionType === ActionType.ACTION_TYPE_CASCADE) {
+      const m = CascadeMetadataProto.decode(action.metadata);
+      decodedMetadata = {
+        data_hash: m.dataHash,
+        file_name: m.fileName,
+        rq_ids_ic: m.rqIdsIc,
+        rq_ids_max: m.rqIdsMax,
+        rq_ids_ids: m.rqIdsIds ?? [],
+        signatures: m.signatures,
+        public: m.public,
+      };
+    } else if (action.actionType === ActionType.ACTION_TYPE_SENSE) {
+      const m = SenseMetadataProto.decode(action.metadata);
+      decodedMetadata = {
+        data_hash: m.dataHash,
+        dd_and_fingerprints_ic: m.ddAndFingerprintsIc,
+        collection_id: m.collectionId,
+        group_id: m.groupId,
+        dd_and_fingerprints_max: m.ddAndFingerprintsMax,
+        dd_and_fingerprints_ids: m.ddAndFingerprintsIds ?? [],
+        signatures: m.signatures,
+      };
+    } else {
+      throw new Error(`Unsupported action type ${action.actionType} for action ${actionId}`);
+    }
 
     const result = {
       creator: action.creator,
