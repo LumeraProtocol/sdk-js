@@ -138,3 +138,5 @@ export {
 
 // Wallet utilities - Keplr adapter
 export { getKeplrSigner, isKeplrAvailable } from "./wallets/keplr";
+export { createProgrammaticSigner } from "./wallets/programmatic";
+export type { ProgrammaticSignerOptions } from "./wallets/programmatic";

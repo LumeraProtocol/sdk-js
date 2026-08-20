@@ -315,6 +315,29 @@ export class TaskManager {
    * ```
    */
   async waitForDownloadCompletion(): Promise<void> {
+    // Node.js does not provide browser EventSource. Fall back to the same
+    // status-polling path used by uploads so documented programmatic/CI flows
+    // work without requiring callers to install a global SSE polyfill.
+    if (typeof globalThis.EventSource === "undefined") {
+      const startTime = Date.now();
+      while (Date.now() - startTime <= this.timeout) {
+        const statusPayload = await this.client.getTaskStatus(this.taskId);
+        const status = this.extractStatus(statusPayload);
+        if (status && TERMINAL_SUCCESS_STATUSES.has(status)) return;
+        if (status && TERMINAL_FAILURE_STATUSES.has(status)) {
+          throw new Error(
+            `Download task ${this.taskId} failed with status ${status}: ${
+              this.extractErrorMessage(statusPayload) ?? "Unknown error"
+            }`
+          );
+        }
+        await this.sleep(this.pollInterval);
+      }
+      throw new Error(
+        `Download task ${this.taskId} timed out after ${this.timeout}ms`
+      );
+    }
+
     return new Promise((resolve, reject) => {
       const eventSource = this.client.watchDownloadTask(this.taskId);
       let settled = false;
