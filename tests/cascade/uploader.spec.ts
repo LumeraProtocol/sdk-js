@@ -66,9 +66,11 @@ describe("CascadeUploader", () => {
     const startCascadeMock = vi.fn().mockResolvedValue({ task_id: "task-abc" });
     const snClient = { startCascade: startCascadeMock } as unknown as SNApiClient;
 
+    const waitForActionFinalization = vi.fn().mockResolvedValue(undefined);
     const chainPort = {
       getActionParams: vi.fn().mockResolvedValue({ max_raptor_q_symbols: 10, svc_challenge_count: 2, svc_min_chunks_for_challenge: 1 }),
       requestActionTx: vi.fn().mockResolvedValue({ actionId: "action-1" }),
+      waitForActionFinalization,
     } as any;
 
     const signer = {
@@ -86,8 +88,25 @@ describe("CascadeUploader", () => {
 
     expect(chainPort.getActionParams).toHaveBeenCalled();
     expect(chainPort.requestActionTx).toHaveBeenCalled();
+
+    // ADR-036 wallets base64-encode their string input in MsgSignData. The
+    // index call must therefore receive raw canonical JSON; its ADR-036 data
+    // becomes exactly the indexFileB64 embedded in metadata.signatures.
+    const signCalls = signer.signArbitrary.mock.calls;
+    expect(signCalls).toHaveLength(3);
+    const expectedIndexJson = JSON.stringify({
+      version: 1,
+      layout_ids: ["id-1", "id-2", "id-3"],
+      layout_signature: "sig",
+    });
+    expect(signCalls[1]).toEqual(["lumera-testnet-2", "lumera1x", expectedIndexJson]);
+
     expect(startCascadeMock).toHaveBeenCalledTimes(1);
     expect(hoisted.TaskManagerMock).toHaveBeenCalledWith(snClient, "task-abc", { pollInterval: 250 });
+    expect(waitForActionFinalization).toHaveBeenCalledWith("action-1", {
+      timeout: undefined,
+      pollInterval: 250,
+    });
     expect(result).toEqual({ task_id: "task-abc", status: "completed" });
   });
 });
